@@ -1,0 +1,38 @@
+name: Deploy via FTPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Récupération du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Build (optionnel)
+      - name: Build (si nécessaire)
+        run: |
+          echo "Aucune étape de build configurée"
+
+      # Déploiement FTPS
+      - name: Sync files via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./app/
+          server-dir: /sites/job-candys.jobmakombela.fr/
+          exclude: |
+            **/.git*
+            **/node_modules/**
+            **/*.map
+            **/*:Zone.Identifier
+          dry-run: false
