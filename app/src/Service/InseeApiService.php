@@ -15,24 +15,22 @@ class InseeApiService
     ) {
     }
 
-
     public function searchEntreprise(
         string $mot,
-        int $nombre = 1000,
+        int $nombre = 10000,
         int $debut = 0
     ): array {
 
         $response = $this->client->request(
             'GET',
-            'https://api.insee.fr/api-sirene/3.11/siren',
+            'https://api.insee.fr/api-sirene/3.11/siret',
             [
                 'headers' => [
                     'Accept' => 'application/json',
                     'X-INSEE-Api-Key-Integration' => $this->apiKey,
                 ],
-
                 'query' => [
-                    'q' => 'periode(denominationUniteLegale:"' . $mot . '")',
+                    'q' => 'denominationUniteLegale:' . $mot,
                     'nombre' => $nombre,
                     'debut' => $debut,
                 ],

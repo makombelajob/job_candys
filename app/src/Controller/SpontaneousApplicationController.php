@@ -26,15 +26,17 @@ final class SpontaneousApplicationController extends AbstractController
         $resultats = null;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $motRecherche = $data['mot'];
-            if ($motRecherche) {
-                $resultats = 
-                    $inseeApiService->searchEntreprise(
-                        $motRecherche
-                    );
+
+            $motRecherche = $form->get('mot')->getData();
+
+            if (!empty($motRecherche)) {
+
+                $resultats = $inseeApiService->searchEntreprise(
+                    $motRecherche
+                );
             }
         }
+
         return $this->render(
             'spontaneous_application/index.html.twig',
             [

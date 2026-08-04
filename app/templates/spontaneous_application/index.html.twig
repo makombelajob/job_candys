@@ -4,26 +4,37 @@
 {% endblock %}
 
 {% block body %}
+
 	<div class="wrapper">
+
 		<h1>Recherche entreprise</h1>
 
 		<div class="controls">
+
 			{{ form_start(form) }}
+
 			<div class="control-group">
 				{{ form_label(form.mot) }}
 				{{ form_widget(form.mot) }}
 			</div>
-			<button type="submit">Rechercher</button>
+
+			<button type="submit">
+				Rechercher
+			</button>
+
 			{{ form_end(form) }}
+
 		</div>
 
-		{% if resultats and resultats.unitesLegales is defined %}
+		{% if resultats and resultats.etablissements is defined %}
+
 			<h2>Résultats</h2>
 
 			<table class="company-table">
+
 				<thead>
 					<tr>
-						<th>SIREN</th>
+						<th>SIRET</th>
 						<th>Nom</th>
 						<th>Activité</th>
 						<th>Localisation</th>
@@ -31,41 +42,82 @@
 						<th>Action</th>
 					</tr>
 				</thead>
+
 				<tbody>
-					{% for entreprise in resultats.unitesLegales %}
-						{% set periode=entreprise.periodesUniteLegale[0] %}
+
+					{% for entreprise in resultats.etablissements %}
+
 						<tr>
-							<td>{{ entreprise.siren|default('') }}</td>
 
 							<td>
-								{% if periode.denominationUniteLegale is defined and periode.denominationUniteLegale %}
-									{{ periode.denominationUniteLegale }}
-								{% else %}
-									{{ [
-							            entreprise.prenom1UniteLegale|default(''),
-							            entreprise.prenom2UniteLegale|default(''),
-							            entreprise.prenom3UniteLegale|default(''),
-							            entreprise.prenom4UniteLegale|default(''),
-							            periode.nomUniteLegale|default('')
-						            ]|filter(v=>v)|join(' ') }}
+								{{ entreprise.siret|default('') }}
+							</td>
+
+							<td>
+								{{ entreprise.uniteLegale.denominationUniteLegale|default('') }}
+							</td>
+
+							<td>
+								{{ entreprise.uniteLegale.activitePrincipaleUniteLegale|default('') }}
+							</td>
+
+							<td>
+
+								{% if entreprise.adresseEtablissement.complementAdresseEtablissement %}
+									{{ entreprise.adresseEtablissement.complementAdresseEtablissement }}
 								{% endif %}
+
+								{% if entreprise.adresseEtablissement.numeroVoieEtablissement %}
+									{{ entreprise.adresseEtablissement.numeroVoieEtablissement }}
+								{% endif %}
+
+								{% if entreprise.adresseEtablissement.typeVoieEtablissement %}
+									{{ entreprise.adresseEtablissement.typeVoieEtablissement }}
+								{% endif %}
+
+								{% if entreprise.adresseEtablissement.libelleVoieEtablissement %}
+									{{ entreprise.adresseEtablissement.libelleVoieEtablissement }}
+								{% endif %}
+
+								{% if entreprise.adresseEtablissement.codePostalEtablissement %}
+									{{ entreprise.adresseEtablissement.codePostalEtablissement }}
+								{% endif %}
+
+								{% if entreprise.adresseEtablissement.libelleCommuneEtablissement %}
+									{{ entreprise.adresseEtablissement.libelleCommuneEtablissement }}
+								{% endif %}
+
 							</td>
-
-							<td>{{ periode.activitePrincipaleUniteLegale|default('') }}</td>
-
-							<td>{{ entreprise.adresse|default('') }}</td>
 
 							<td>
-								<a class="website" href="#">Website</a>
+								<a class="website" href="#">
+									Website
+								</a>
 							</td>
 
 							<td>
-								<button class="action-btn">Action</button>
+								<button class="action-btn" type="button">
+									Action
+								</button>
 							</td>
+
 						</tr>
+
+
 					{% endfor %}
+
 				</tbody>
+
 			</table>
+
+		{% elseif resultats is not null %}
+
+			<p>
+				Aucune entreprise trouvée.
+			</p>
+
 		{% endif %}
+
 	</div>
+
 {% endblock %}
