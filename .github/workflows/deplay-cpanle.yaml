@@ -10,18 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Build (optionnel)
-      - name: Build (si nécessaire)
+      - name: Build
         run: |
           echo "Aucune étape de build configurée"
 
-      # Déploiement FTPS
       - name: Sync files via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
