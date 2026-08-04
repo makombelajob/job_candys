@@ -25,8 +25,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          secure: true
-          ftp-passive: true
           local-dir: ./app/
           server-dir: /sites/job-candys.jobmakombela.fr/
           exclude: |
