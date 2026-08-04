@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur serveur
+{% endblock %}
+
+{% block body %}
+	<section class="error-page">
+		<div class="error-card">
+			<span class="error-eyebrow">Serveur</span>
+			<div class="error-illustration">
+				<svg viewbox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<rect x="68" y="40" width="184" height="140" rx="24" fill="#FEE2E2"/>
+					<rect x="92" y="64" width="136" height="92" rx="16" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="4"/>
+					<path d="M120 92H200" stroke="#DC2626" stroke-width="10" stroke-linecap="round"/>
+					<path d="M120 116H178" stroke="#DC2626" stroke-width="10" stroke-linecap="round"/>
+					<path d="M132 152L188 152" stroke="#F43F5E" stroke-width="10" stroke-linecap="round"/>
+				</svg>
+			</div>
+			<h1>500</h1>
+			<h2>Erreur interne</h2>
+			<p>Une erreur inattendue est survenue sur le serveur. Nos équipes ont été informées.</p>
+			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+		</div>
+	</section>
+{% endblock %}

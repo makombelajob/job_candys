@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidature Spontanée | Contact
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/signup.css') }}">
+{% endblock %}
+
+{% block body %}
+	<div class="signup-wrapper contact-bg">
+		<div class="signup-card">
+			<div class="signup-header">
+				<div class="signup-logo">CS</div>
+				<div>
+					<h1>Contactez-nous</h1>
+					<p class="subtitle">Vous avez une question, une remarque ou une idée à partager ? Nous serons ravis de vous répondre.</p>
+				</div>
+			</div>
+
+			<form class="contact-form" method="post">
+				<div class="form-row signup-field">
+					<label for="fullName">Nom complet</label>
+					<input id="fullName" type="text" name="fullName" placeholder="Votre nom complet" required>
+				</div>
+
+				<div class="form-row signup-field">
+					<label for="email">Email</label>
+					<input id="email" type="email" name="email" placeholder="votre@email.com" required>
+				</div>
+
+				<div class="form-row signup-field">
+					<label for="subject">Sujet</label>
+					<input id="subject" type="text" name="subject" placeholder="Objet de votre message" required>
+				</div>
+
+				<div class="form-row signup-field">
+					<label for="message">Message</label>
+					<textarea id="message" name="message" placeholder="Décrivez votre demande ici..." required></textarea>
+				</div>
+
+				<div class="signup-cta">
+					<button class="btn" type="submit">Envoyer</button>
+				</div>
+
+				<p class="form-message" aria-live="polite"></p>
+			</form>
+		</div>
+	</div>
+{% endblock %}

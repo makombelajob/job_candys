@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidature Spontanée | Accueil
+{% endblock %}
+
+{% block body %}
+
+	<main>
+		<section class="hero">
+			<div class="hero-copy">
+				<h1>Donnez un premier pas vers votre avenir professionnel.</h1>
+				<p>Cette plateforme a été pensée pour permettre à chaque utilisateur de déposer une candidature spontanée simplement, sans attendre une offre publiée. Présentez votre profil, mettez en valeur vos compétences et laissez les recruteurs vous trouver.</p>
+				<div class="hero-actions">
+					<a class="btn btn-primary" href="{{ path('app_register') }}">Créer un compte</a>
+					<a class="btn btn-secondary" href="{{ path('app_about') }}">En savoir plus</a>
+				</div>
+			</div>
+			<div class="hero-card">
+				<h2>Pourquoi cette plateforme ?</h2>
+				<ul>
+					<li>Une démarche simple et accessible pour postuler spontanément.</li>
+					<li>Un espace dédié à la présentation de votre profil et de vos réalisations.</li>
+					<li>Un projet en évolution, pensé pour les futurs recrutements et la mise en relation.</li>
+				</ul>
+			</div>
+		</section>
+
+		<section class="section" id="about" aria-labelledby="about-title">
+			<div class="section-card">
+				<h2 id="about-title">À propos de cette plateforme</h2>
+				<p>Cette application est conçue pour aider les candidats à se faire remarquer même lorsqu’aucune offre n’est encore publiée. L’objectif est de créer un espace où chaque personne peut présenter ses compétences, ses motivations et sa disponibilité de manière claire. Nous mettons l'accent sur la simplicité, la lisibilité et l'accès rapide aux informations clés.</p>
+				<div class="section-grid">
+					<div class="info-box">
+						<h3>Pour les candidats</h3>
+						<p>Créez un profil professionnel, ajoutez un CV et des exemples de travaux, et envoyez une candidature en quelques clics. Votre profil reste modifiable et partageable.</p>
+					</div>
+					<div class="info-box">
+						<h3>Pour l’avenir</h3>
+						<p>La plateforme sera progressivement enrichie avec des offres, des fonctionnalités de suivi, un tableau de bord de candidatures et des outils de mise en relation.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section features" aria-labelledby="features-title">
+			<div class="section-card">
+				<h2 id="features-title">Fonctionnalités</h2>
+				<p class="muted">Des outils simples pour présenter votre profil et faciliter la mise en relation.</p>
+				<div class="features-grid">
+					<div class="feature-card">
+						<h3>Profil complet</h3>
+						<p>Ajoutez vos expériences, compétences et un portfolio pour vous démarquer.</p>
+					</div>
+					<div class="feature-card">
+						<h3>Suivi de candidatures</h3>
+						<p>Suivez les candidatures envoyées et leur statut dans un tableau de bord dédié.</p>
+					</div>
+					<div class="feature-card">
+						<h3>Mise en relation</h3>
+						<p>Recevez des propositions et soyez informé lorsque votre profil intéresse un recruteur.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section steps" aria-labelledby="steps-title">
+			<div class="section-card">
+				<h2 id="steps-title">Comment ça marche</h2>
+				<div class="steps-grid">
+					<div class="step">
+						<div class="step-num">1</div>
+						<h4>Créez votre profil</h4>
+						<p>Remplissez les informations essentielles et ajoutez un CV.</p>
+					</div>
+					<div class="step">
+						<div class="step-num">2</div>
+						<h4>Postulez spontanément</h4>
+						<p>Envoyez votre candidature aux entreprises qui vous intéressent.</p>
+					</div>
+					<div class="step">
+						<div class="step-num">3</div>
+						<h4>Suivez et échangez</h4>
+						<p>Recevez des retours et gérez vos échanges depuis votre tableau de bord.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section testimonials" aria-labelledby="testimonials-title">
+			<div class="section-card">
+				<h2 id="testimonials-title">Témoignages</h2>
+				<div class="testimonials-grid">
+					<div class="testimonial">
+						<p>"Grâce à cette plateforme j'ai pu présenter mon travail et être contacté par une entreprise en moins d'une semaine."</p>
+						<strong>— Marie, développeuse</strong>
+					</div>
+					<div class="testimonial">
+						<p>"Processus simple et clair, idéal pour candidatures spontanées."</p>
+						<strong>— Julien, designer</strong>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+{% endblock %}

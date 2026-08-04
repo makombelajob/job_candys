@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable
+{% endblock %}
+
+{% block body %}
+	<section class="error-page">
+		<div class="error-card">
+			<span class="error-eyebrow">Introuvable</span>
+			<div class="error-illustration">
+				<svg viewbox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M68 164C68 124 96 96 136 96H184C224 96 252 124 252 164V168H68V164Z" fill="#DBEAFE"/>
+					<path d="M112 84L158 52L204 84" stroke="#1D4ED8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+					<circle cx="158" cy="128" r="34" fill="#FFFFFF" stroke="#2563EB" stroke-width="8"/>
+					<path d="M145 115L171 141" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+					<path d="M171 115L145 141" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+				</svg>
+			</div>
+			<h1>404</h1>
+			<h2>Page introuvable</h2>
+			<p>Désolé, la page que vous recherchez n'existe pas ou a été déplacée.</p>
+			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+		</div>
+	</section>
+{% endblock %}

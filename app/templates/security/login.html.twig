@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!
+{% endblock %}
+
+{% block body %}
+	{% block stylesheets %}
+		{{ parent() }}
+		<link rel="stylesheet" href="{{ asset('css/signup.css') }}">
+	{% endblock %}
+
+	<div class="signup-wrapper login-bg">
+		<div class="signup-card">
+			<div class="signup-header">
+				<div class="signup-logo">CS</div>
+				<div>
+					<h1>Connexion</h1>
+					<p class="subtitle">Connectez-vous pour accéder à votre espace</p>
+				</div>
+			</div>
+
+			{% if error %}
+				<div class="form-errors">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+			{% endif %}
+
+			{% if app.user %}
+				<div class="mb-3">
+					Vous êtes connecté en tant que
+					{{ app.user.userIdentifier }},
+					<a href="{{ logout_path() }}">Déconnexion</a>
+				</div>
+			{% endif %}
+
+			<form method="post">
+				<div class="form-row signup-field">
+					<label for="inputEmail">Email</label>
+					<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="" autocomplete="email" required autofocus placeholder="votre@email.com">
+				</div>
+
+				<div class="form-row signup-field">
+					<label for="inputPassword">Mot de passe</label>
+					<input type="password" name="password" id="inputPassword" class="" autocomplete="current-password" required placeholder="Mot de passe">
+				</div>
+
+				<input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+				<div class="form-row form-check">
+					<label><input type="checkbox" name="_remember_me">
+						Se souvenir de moi
+					</label>
+				</div>
+
+				<div class="signup-cta">
+					<button class="btn" type="submit">Se connecter</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

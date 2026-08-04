@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidature Spontanée | À propos
+{% endblock %}
+
+{% block body %}
+
+	<main>
+		<section class="section">
+			<div class="section-card">
+				<h1>À propos de cette plateforme</h1>
+				<p>Cette plateforme permet aux candidats de communiquer leur intérêt et leurs compétences aux recruteurs, même sans offre publiée. Nous favorisons la clarté, la rapidité et l'accessibilité.</p>
+				<div class="about-hero">
+					<div class="about-mission">
+						<h2>Notre mission</h2>
+						<p>Donner à chaque candidat une vitrine professionnelle simple à créer et facile à partager, pour augmenter les chances d'être contacté par les employeurs.</p>
+					</div>
+					<div class="about-principles">
+						<h2>Nos principes</h2>
+						<ul>
+							<li>Transparence : informations claires et accessibles.</li>
+							<li>Simplicité : création de profil rapide.</li>
+							<li>Respect : protection des données et confidentialité.</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="about-cta-wrap">
+					<a class="about-cta" href="{{ path('app_contact') }}">Nous contacter</a>
+				</div>
+
+				<section class="section" aria-labelledby="team-title">
+					<div class="section-card">
+						<h2 id="team-title">L'équipe et contributeurs</h2>
+						<p class="muted">Une petite équipe dédiée à améliorer l'expérience candidat.</p>
+						<div class="team-grid">
+							<div class="team-member">
+								<strong>Marie Dupont</strong>
+								<p>Product & UX</p>
+							</div>
+							<div class="team-member">
+								<strong>Julien Martin</strong>
+								<p>Développement</p>
+							</div>
+							<div class="team-member">
+								<strong>Équipe</strong>
+								<p>Contributeurs</p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<section class="section" aria-labelledby="roadmap-title">
+					<div class="section-card">
+						<h2 id="roadmap-title">Roadmap</h2>
+						<ul class="roadmap-list">
+							<li class="roadmap-item">
+								<div class="roadmap-dot" aria-hidden></div>
+								<div class="roadmap-content">
+									<span class="roadmap-badge">Q3</span>
+									<div class="roadmap-text">
+										<strong>Prochaine étape :</strong>
+										tableau de bord candidat</div>
+								</div>
+							</li>
+
+							<li class="roadmap-item">
+								<div class="roadmap-dot" aria-hidden></div>
+								<div class="roadmap-content">
+									<span class="roadmap-badge">Q4</span>
+									<div class="roadmap-text">
+										<strong>Suivi :</strong>
+										notifications et messagerie</div>
+								</div>
+							</li>
+
+							<li class="roadmap-item">
+								<div class="roadmap-dot" aria-hidden></div>
+								<div class="roadmap-content">
+									<span class="roadmap-badge">2027</span>
+									<div class="roadmap-text">
+										<strong>Long terme :</strong>
+										intégration d'offres et matching</div>
+								</div>
+							</li>
+
+						</ul>
+					</div>
+				</section>
+			</div>
+		</section>
+	</main>
+
+{% endblock %}

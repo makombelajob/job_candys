@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur
+{% endblock %}
+
+{% block body %}
+	<section class="error-page">
+		<div class="error-card">
+			<span class="error-eyebrow">Erreur</span>
+			<div class="error-illustration">
+				<svg viewbox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<rect x="38" y="34" width="244" height="152" rx="24" fill="#E8F0FF"/>
+					<rect x="58" y="54" width="204" height="112" rx="16" fill="#FFFFFF" stroke="#93C5FD" stroke-width="4"/>
+					<path d="M91 118C110 92 132 79 160 79C188 79 210 92 229 118" stroke="#2563EB" stroke-width="10" stroke-linecap="round"/>
+					<circle cx="118" cy="106" r="12" fill="#2563EB"/>
+					<circle cx="202" cy="106" r="12" fill="#2563EB"/>
+					<path d="M123 146C140 132 180 132 197 146" stroke="#1D4ED8" stroke-width="8" stroke-linecap="round"/>
+				</svg>
+			</div>
+			<h1>{{ status_code }}</h1>
+			<h2>Une erreur est survenue</h2>
+			<p>{{ status_text }}</p>
+			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+		</div>
+	</section>
+{% endblock %}

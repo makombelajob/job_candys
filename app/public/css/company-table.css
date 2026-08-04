@@ -1,0 +1,175 @@
+:root {
+    color-scheme: light;
+    --border: #d8dde6;
+    --bg: #f8fafc;
+    --primary: #0d6efd;
+    --text: #0f172a;
+    --muted: #64748b;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+}
+
+.wrapper {
+    margin: 2rem auto;
+    max-width: 1280px;
+    padding: 1.25rem 1.5rem 2.5rem;
+}
+
+h1 {
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+h2 {
+    margin-top: 1.5rem;
+    color: var(--text);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: end;
+    margin: 1rem 0;
+    padding: 1rem 1.1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+}
+
+.control-group label {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.control-group input,
+.control-group select {
+    min-width: 300px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    background: white;
+    color: var(--text);
+}
+
+.controls button {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--primary);
+    border-radius: 0.65rem;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.controls button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Tableau entreprises */
+
+.company-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.company-table th,
+.company-table td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem 0.8rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.company-table th:nth-child(2),
+.company-table td:nth-child(2) {
+    width: 220px;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.company-table th {
+    background: var(--bg);
+    font-size: 0.92rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.company-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.company-table td {
+    font-size: 0.95rem;
+}
+
+/* Colonne site web */
+
+.website {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.website:hover {
+    text-decoration: underline;
+}
+
+/* Etat vide éventuel */
+
+.empty-state {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    color: var(--muted);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    .wrapper {
+        padding: 1rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-group input,
+    .control-group select {
+        min-width: 100%;
+    }
+
+    .company-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+}

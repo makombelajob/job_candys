@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choix de profil
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/profiles.css') }}">
+{% endblock %}
+
+{% block body %}
+	<div class="profile-choice-wrapper">
+		<div class="profile-choice-card">
+			<h1>Choisissez votre parcours</h1>
+			<p>Accédez rapidement à la démarche qui vous correspond.</p>
+
+			<div class="profile-choice-actions">
+				<a href="{{ path('app_spontaneous_application') }}">Candidature Spontanée</a>
+				<a href="{{ path('app_freelance_application') }}" class="secondary">FreeLancer</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}
