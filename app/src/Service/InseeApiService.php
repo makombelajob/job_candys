@@ -39,4 +39,22 @@ class InseeApiService
 
         return $response->toArray();
     }
+    public function findBySiren(string $siren): array
+    {
+        $response = $this->client->request(
+            'GET',
+            'https://api.insee.fr/api-sirene/3.11/siret',
+            [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'X-INSEE-Api-Key-Integration' => $this->apiKey,
+                ],
+                'query' => [
+                    'q' => 'siren:' . $siren,
+                    'nombre' => 1,
+                ],
+            ]
+        );
+        return $response->toArray();
+    }
 }

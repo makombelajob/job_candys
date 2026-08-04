@@ -2,13 +2,27 @@ FROM php:8.4-apache
 
 # Installation des pré-requis Symfony
 RUN apt-get update \
-    && apt-get install -y build-essential curl zlib1g-dev g++ libicu-dev zip libzip-dev libpng-dev libjpeg-dev libwebp-dev libfreetype-dev \
+    && apt-get install -y \
+    build-essential \
+    curl \
+    zlib1g-dev \
+    g++ \
+    libicu-dev \
+    zip \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libwebp-dev \
+    libfreetype-dev \
+    python3 \
+    python3-pip \
+    python3-requests \
     && docker-php-ext-install mysqli pdo pdo_mysql intl opcache \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && docker-php-ext-configure zip \
     && docker-php-ext-install zip
-
+    
 # Installation de la gestion des images
 RUN docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
     && docker-php-ext-configure gd \

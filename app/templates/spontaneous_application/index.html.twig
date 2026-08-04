@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recherche entreprise
+{% block title %}
+	Recherche entreprise
 {% endblock %}
 
 {% block body %}
@@ -26,7 +27,8 @@
 
 		</div>
 
-		{% if resultats and resultats.etablissements is defined %}
+
+		{% if resultats and resultats.etablissements is defined and resultats.etablissements is not empty %}
 
 			<h2>Résultats</h2>
 
@@ -39,9 +41,9 @@
 						<th>Activité</th>
 						<th>Localisation</th>
 						<th>Website</th>
-						<th>Action</th>
 					</tr>
 				</thead>
+
 
 				<tbody>
 
@@ -52,63 +54,44 @@
 							<td>
 								{{ entreprise.siret|default('') }}
 							</td>
-
 							<td>
 								{{ entreprise.uniteLegale.denominationUniteLegale|default('') }}
 							</td>
-
 							<td>
 								{{ entreprise.uniteLegale.activitePrincipaleUniteLegale|default('') }}
 							</td>
-
 							<td>
 
-								{% if entreprise.adresseEtablissement.complementAdresseEtablissement %}
-									{{ entreprise.adresseEtablissement.complementAdresseEtablissement }}
-								{% endif %}
+								{% set adresse = entreprise.adresseEtablissement %}
 
-								{% if entreprise.adresseEtablissement.numeroVoieEtablissement %}
-									{{ entreprise.adresseEtablissement.numeroVoieEtablissement }}
-								{% endif %}
-
-								{% if entreprise.adresseEtablissement.typeVoieEtablissement %}
-									{{ entreprise.adresseEtablissement.typeVoieEtablissement }}
-								{% endif %}
-
-								{% if entreprise.adresseEtablissement.libelleVoieEtablissement %}
-									{{ entreprise.adresseEtablissement.libelleVoieEtablissement }}
-								{% endif %}
-
-								{% if entreprise.adresseEtablissement.codePostalEtablissement %}
-									{{ entreprise.adresseEtablissement.codePostalEtablissement }}
-								{% endif %}
-
-								{% if entreprise.adresseEtablissement.libelleCommuneEtablissement %}
-									{{ entreprise.adresseEtablissement.libelleCommuneEtablissement }}
-								{% endif %}
+								{{ adresse.numeroVoieEtablissement|default('') }}
+								{{ adresse.typeVoieEtablissement|default('') }}
+								{{ adresse.libelleVoieEtablissement|default('') }}
+								<br>
+								{{ adresse.codePostalEtablissement|default('') }}
+								{{ adresse.libelleCommuneEtablissement|default('') }}
 
 							</td>
-
 							<td>
-								<a class="website" href="#">
-									Website
-								</a>
-							</td>
+								{% if entreprise.siret is defined and entreprise.siret is not empty %}
+									<a class="website" href="{{ path('app_find_web', { 'siret': entreprise.siret, 'nom': entreprise.uniteLegale.denominationUniteLegale }) }}" title="Chercher le site officiel">
 
-							<td>
-								<button class="action-btn" type="button">
-									Action
-								</button>
+										<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe" viewbox="0 0 16 16">
+											<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"/>
+										</svg>
+									</a>
+								{% else %}
+									-
+								{% endif %}
 							</td>
 
 						</tr>
-
-
 					{% endfor %}
 
 				</tbody>
 
 			</table>
+
 
 		{% elseif resultats is not null %}
 
@@ -117,6 +100,7 @@
 			</p>
 
 		{% endif %}
+
 
 	</div>
 
