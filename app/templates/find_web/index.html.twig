@@ -1,42 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FindWebController!
+{% block title %}Recherche site officiel
 {% endblock %}
 
 {% block body %}
-	<style>
-		.example-wrapper
-		{
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code
-		{
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-	</style>
-
-	<div class="example-wrapper">
-		<h1>Recherche site officiel</h1>
-
-		<p>
-			<strong>Nom :</strong>
-			{{ nom }}
-		</p>
-
-		<p>
-			<strong>SIRET :</strong>
-			{{ siret }}
-		</p>
-
-		<p>
-			<strong>Résultat Python :</strong>
-			{{ resultat }}
-		</p>
+	{% block stylesheets %}
+		{{ parent() }}
+		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
+	{% endblock %}
 
 
+	<div class="full-screen">
+		<div class="card">
+			<h1>Recherche site officiel</h1>
+
+			<div class="info">
+				<p>
+					<strong>Nom :</strong>
+					{{ nom }}
+				</p>
+
+				<p>
+					<strong>SIRET :</strong>
+					{{ siret }}
+				</p>
+
+				<p>
+					<strong>Adresse :</strong>
+					{{ adresse|nl2br }}
+				</p>
+
+				<p>
+					<strong>Site web :</strong>
+					{% if resultat starts with 'http' %}
+						<a href="{{ resultat }}" target="_blank">
+							{{ resultat }}
+						</a>
+					{% else %}
+						{{ resultat }}
+					{% endif %}
+				</p>
+			</div>
+
+			<div class="actions">
+				<button id="trouver-contact" class="btn primary">Trouver contact</button>
+			</div>
+		</div>
 	</div>
+
+	<script src="{{ asset('js/find_web.js') }}"></script>
 {% endblock %}

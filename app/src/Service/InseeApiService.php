@@ -17,7 +17,7 @@ class InseeApiService
 
     public function searchEntreprise(
         string $mot,
-        int $nombre = 10000,
+        int $nombre = 1000,
         int $debut = 0
     ): array {
 

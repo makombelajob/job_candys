@@ -74,7 +74,7 @@
 							</td>
 							<td>
 								{% if entreprise.siret is defined and entreprise.siret is not empty %}
-									<a class="website" href="{{ path('app_find_web', { 'siret': entreprise.siret, 'nom': entreprise.uniteLegale.denominationUniteLegale }) }}" title="Chercher le site officiel">
+									<a class="website" href="{{ path('app_find_web', { 'siret': entreprise.siret }) }}" title="Chercher le site officiel">
 
 										<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe" viewbox="0 0 16 16">
 											<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"/>
