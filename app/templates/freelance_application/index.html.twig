@@ -1,20 +1,107 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FreelanceApplicationController!{% endblock %}
+{% block title %}
+	Recherche entreprise
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+	<div class="wrapper">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/html/src/Controller/FreelanceApplicationController.php</code></li>
-        <li>Your template at <code>/var/www/html/templates/freelance_application/index.html.twig</code></li>
-    </ul>
-</div>
+		<h1>Recherche entreprise</h1>
+
+		<div class="controls">
+
+			{{ form_start(form) }}
+
+			<div class="control-group">
+				{{ form_label(form.mot) }}
+				{{ form_widget(form.mot) }}
+			</div>
+
+			<button type="submit">
+				Rechercher
+			</button>
+
+			{{ form_end(form) }}
+
+		</div>
+
+
+		{% if resultats and resultats.etablissements is defined and resultats.etablissements is not empty %}
+
+			<h2>Résultats</h2>
+
+			<table class="company-table">
+
+				<thead>
+					<tr>
+						<th>SIRET</th>
+						<th>Nom</th>
+						<th>Activité</th>
+						<th>Localisation</th>
+						<th>Website</th>
+					</tr>
+				</thead>
+
+
+				<tbody>
+
+					{% for entreprise in resultats.etablissements %}
+
+						<tr>
+
+							<td>
+								{{ entreprise.siret|default('') }}
+							</td>
+							<td>
+								{{ entreprise.uniteLegale.denominationUniteLegale|default('') }}
+							</td>
+							<td>
+								{{ entreprise.uniteLegale.activitePrincipaleUniteLegale|default('') }}
+							</td>
+							<td>
+
+								{% set adresse = entreprise.adresseEtablissement %}
+
+								{{ adresse.numeroVoieEtablissement|default('') }}
+								{{ adresse.typeVoieEtablissement|default('') }}
+								{{ adresse.libelleVoieEtablissement|default('') }}
+								<br>
+								{{ adresse.codePostalEtablissement|default('') }}
+								{{ adresse.libelleCommuneEtablissement|default('') }}
+
+							</td>
+							<td>
+								{% if entreprise.siret is defined and entreprise.siret is not empty %}
+									<a class="website" href="{{ path('app_find_web', { 'siret': entreprise.siret }) }}" title="Chercher le site officiel">
+
+										<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe" viewbox="0 0 16 16">
+											<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"/>
+										</svg>
+									</a>
+								{% else %}
+									-
+								{% endif %}
+							</td>
+
+						</tr>
+					{% endfor %}
+
+				</tbody>
+
+			</table>
+
+
+		{% elseif resultats is not null %}
+
+			<p>
+				Aucune entreprise trouvée.
+			</p>
+
+		{% endif %}
+
+
+	</div>
+
 {% endblock %}
