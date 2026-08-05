@@ -16,10 +16,27 @@
 					<path d="M171 115L145 141" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
 				</svg>
 			</div>
-			<h1>404</h1>
+			<h1>{{ status_code }}</h1>
+
 			<h2>Page introuvable</h2>
 			<p>Désolé, la page que vous recherchez n'existe pas ou a été déplacée.</p>
-			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+			{% if is_granted('ROLE_ADMIN') %}
+				<a href="{{ path('app_admin') }}" class="btn-home">
+					Retour au tableau de bord
+				</a>
+
+			{% elseif app.user %}
+				<a href="{{ path('app_profiles') }}" class="btn-home">
+					Retour à mon accueil
+				</a>
+
+			{% else %}
+				<a href="{{ path('app_main') }}" class="btn-home">
+					Retour à l'accueil
+				</a>
+			{% endif %}
+
+
 		</div>
 	</section>
 {% endblock %}

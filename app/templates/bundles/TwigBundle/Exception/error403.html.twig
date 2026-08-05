@@ -16,10 +16,19 @@
 					<path d="M137 130H183" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
 				</svg>
 			</div>
-			<h1>403</h1>
+			<h1>{{ status_code }}</h1>
 			<h2>Accès interdit</h2>
 			<p>Vous n'avez pas les autorisations nécessaires pour accéder à cette page.</p>
-			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+			{% if app.user %}
+				<a href="{{ path('app_profiles') }}" class="btn-home">
+					Retour à mon accueil
+				</a>
+			{% else %}
+				<a href="{{ path('app_main') }}" class="btn-home">
+					Retour à l'accueil
+				</a>
+			{% endif %}
+
 		</div>
 	</section>
 {% endblock %}

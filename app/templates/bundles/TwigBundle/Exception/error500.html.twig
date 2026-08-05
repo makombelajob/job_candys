@@ -16,10 +16,21 @@
 					<path d="M132 152L188 152" stroke="#F43F5E" stroke-width="10" stroke-linecap="round"/>
 				</svg>
 			</div>
-			<h1>500</h1>
+			<h1>{{ status_code }}</h1>
+
 			<h2>Erreur interne</h2>
 			<p>Une erreur inattendue est survenue sur le serveur. Nos équipes ont été informées.</p>
-			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+
+			{% if app.user %}
+				<a href="{{ path('app_profiles') }}" class="btn-home">
+					Retour à mon accueil
+				</a>
+			{% else %}
+				<a href="{{ path('app_main') }}" class="btn-home">
+					Retour à l'accueil
+				</a>
+			{% endif %}
+
 		</div>
 	</section>
 {% endblock %}

@@ -20,7 +20,15 @@
 			<h1>{{ status_code }}</h1>
 			<h2>Une erreur est survenue</h2>
 			<p>{{ status_text }}</p>
-			<a href="{{ path('app_main') }}" class="btn-home">Retour à l'accueil</a>
+			{% if is_granted('ROLE_USER') %}
+				<a href="{{ path('app_profiles') }}" class="btn-home">
+					Retour à mon accueil
+				</a>
+			{% else %}
+				<a href="{{ path('app_main') }}" class="btn-home">
+					Retour à l'accueil
+				</a>
+			{% endif %}
 		</div>
 	</section>
 {% endblock %}
