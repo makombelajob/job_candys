@@ -42,9 +42,25 @@
 				</p>
 			</div>
 
-			<div class="actions">
-				<button id="trouver-contact" class="btn primary">Trouver contact</button>
-			</div>
+			{% if is_granted('ROLE_FREELANCE') %}
+				<div class="actions">
+					<button id="trouver-contact" class="btn primary" data-loading="Recherche...">
+						Trouver contact
+					</button>
+
+					<button id="check-web" class="btn primary" data-loading="Vérification...">
+						Check web
+					</button>
+				</div>
+
+			{% else %}
+				<div class="actions">
+					<button id="trouver-contact" class="btn primary" data-loading="Recherche...">Trouver contact</button>
+				</div>
+
+			{% endif %}
+
+
 		</div>
 	</div>
 

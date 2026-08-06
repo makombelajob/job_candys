@@ -36,7 +36,7 @@ final class SpontaneousApplicationController extends AbstractController
                 );
             }
         }
-
+        
         return $this->render(
             'spontaneous_application/index.html.twig',
             [

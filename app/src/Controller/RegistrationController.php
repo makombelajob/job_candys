@@ -27,6 +27,15 @@ class RegistrationController extends AbstractController
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            // Type of account
+            $accountType = $form->get('accountType')->getData();
+
+            if($accountType === 'freelance'){
+                $user->setRoles(['ROLE_FREELANCE']);
+            } else{
+                $user->setRoles([]);
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
 

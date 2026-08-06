@@ -28,7 +28,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    private array $roles = ['ROLE_USER'];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
@@ -267,4 +267,5 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+   
 }

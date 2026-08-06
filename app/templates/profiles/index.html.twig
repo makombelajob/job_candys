@@ -11,13 +11,26 @@
 {% block body %}
 	<div class="profile-choice-wrapper">
 		<div class="profile-choice-card">
-			<h1>Choisissez votre parcours</h1>
+			{% if is_granted('ROLE_FREELANCE') %}
+				<h1>Bienvenue dans votre espace FREELANCER</h1>
+
+			{% else %}
+				<h1>Bienvenue dans votre espace Candidature Spontanée</h1>
+
+			{% endif %}
 			<p>Accédez rapidement à la démarche qui vous correspond.</p>
 
-			<div class="profile-choice-actions">
-				<a href="{{ path('app_spontaneous_application') }}">Candidature Spontanée</a>
-				<a href="{{ path('app_freelance_application') }}" class="secondary">FreeLancer</a>
-			</div>
+			{% if is_granted('ROLE_FREELANCE') %}
+				<div class="profile-choice-actions">
+					<a href="{{ path('app_freelance_application') }}" class="secondary">FreeLancer</a>
+				</div>
+
+			{% else %}
+				<div class="profile-choice-actions">
+					<a href="{{ path('app_spontaneous_application') }}">Candidature Spontanée</a>
+				</div>
+
+			{% endif %}
 		</div>
 	</div>
 {% endblock %}

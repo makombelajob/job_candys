@@ -1,15 +1,13 @@
-document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.getElementById('trouver-contact');
-    if (!btn) return;
+const buttons = document.querySelectorAll('.actions button');
 
+buttons.forEach(btn => {
     btn.addEventListener('click', function () {
-        console.log('Trouver contact clicked');
-        btn.disabled = true;
-        var previous = btn.textContent;
-        btn.textContent = 'Recherche...';
+        const previous = btn.textContent;
 
-        // Simulate an async action — replace with real logic as needed
-        setTimeout(function () {
+        btn.disabled = true;
+        btn.textContent = btn.dataset.loading;
+
+        setTimeout(() => {
             btn.disabled = false;
             btn.textContent = previous;
         }, 1200);

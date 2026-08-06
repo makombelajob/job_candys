@@ -7,6 +7,7 @@ use App\Service\WebsiteFinderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 
 final class FindWebController extends AbstractController
@@ -19,9 +20,9 @@ final class FindWebController extends AbstractController
 
 
     #[Route('/find/web/{siret}', name: 'app_find_web')]
-    public function index(string $siret): Response
+    public function index(string $siret, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('ROLE_USER', 'ROLE_FREELANCE');
 
 
         /*
@@ -86,6 +87,7 @@ final class FindWebController extends AbstractController
                 'nom' => $nom,
                 'adresse' => $adresse,
                 'resultat' => $resultat ?? 'Aucun site trouvé',
+                'source' => $request->query->get('source'),
             ]
         );
     }

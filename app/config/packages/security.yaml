@@ -43,6 +43,7 @@ security:
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/profiles, roles: ROLE_USER }
+         - { path: ^/freelance/application, roles: ROLE_FREELANCE }
 
 when@test:
     security:

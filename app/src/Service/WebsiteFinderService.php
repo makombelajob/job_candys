@@ -5,8 +5,8 @@ namespace App\Service;
 class WebsiteFinderService
 {
     private const EXTENSIONS = [
-        '.com',
         '.fr',
+        '.com',
         '.eu',
         '.bzh',
     ];
@@ -20,6 +20,7 @@ class WebsiteFinderService
         $variants = $this->generateVariants($name);
 
         foreach ($variants as $variant) {
+
             foreach (self::EXTENSIONS as $extension) {
 
                 $domain = $variant . $extension;
@@ -43,17 +44,18 @@ class WebsiteFinderService
      */
     private function checkDomain(string $domain): ?string
     {
-        $ch = curl_init("https://{$domain}");
+        $url = "https://{$domain}";
+
+        $ch = curl_init($url);
 
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_USERAGENT => 'Mozilla/5.0',
-            CURLOPT_NOBODY => true,
         ]);
 
-        curl_exec($ch);
+        $html = curl_exec($ch);
 
         $httpCode = curl_getinfo(
             $ch,
@@ -63,11 +65,77 @@ class WebsiteFinderService
         curl_close($ch);
 
 
-        if ($httpCode > 0 && $httpCode < 400) {
-            return "https://{$domain}";
+        if ($httpCode > 0 && $httpCode < 400 && !empty($html)) {
+
+            $this->readHomepage($html, $url);
+
+            return $url;
         }
 
         return null;
+    }
+
+
+    /**
+     * Lecture simple de la page d'accueil.
+     */
+    private function readHomepage(string $html, string $url): void
+    {
+        libxml_use_internal_errors(true);
+
+        $dom = new \DOMDocument();
+
+        $dom->loadHTML($html);
+
+
+        // Titre
+        $titles = $dom->getElementsByTagName('title');
+
+        if ($titles->length > 0) {
+
+            $title = trim(
+                $titles->item(0)->textContent
+            );
+
+            $this->log(
+                "Titre : {$title}"
+            );
+        }
+
+
+        // Description
+        $metas = $dom->getElementsByTagName('meta');
+
+        foreach ($metas as $meta) {
+
+            if (
+                strtolower($meta->getAttribute('name')) 
+                === 'description'
+            ) {
+
+                $description = $meta->getAttribute('content');
+
+                $this->log(
+                    "Description : {$description}"
+                );
+            }
+        }
+
+
+        // Texte visible
+        $text = strip_tags($html);
+
+        $text = preg_replace(
+            '/\s+/',
+            ' ',
+            $text
+        );
+
+
+        $this->log(
+            "Début contenu : " .
+            mb_substr($text, 0, 300)
+        );
     }
 
 
@@ -77,9 +145,18 @@ class WebsiteFinderService
     private function generateVariants(string $name): array
     {
         $clean = strtolower(trim($name));
-        $clean = str_replace("'", '', $clean);
 
-        $words = preg_split('/\s+/', $clean);
+        $clean = str_replace(
+            "'",
+            '',
+            $clean
+        );
+
+
+        $words = preg_split(
+            '/\s+/',
+            $clean
+        );
 
 
         $variants = [
@@ -88,7 +165,12 @@ class WebsiteFinderService
         ];
 
 
-        if (!empty($words) && mb_strlen($words[0]) >= 4) {
+        if (
+            !empty($words)
+            &&
+            mb_strlen($words[0]) >= 4
+        ) {
+
             $variants[] = $words[0];
         }
 
@@ -100,7 +182,7 @@ class WebsiteFinderService
 
 
     /**
-     * Affichage temporaire des recherches.
+     * Log temporaire.
      */
     private function log(string $message): void
     {
