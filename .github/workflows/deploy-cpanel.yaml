@@ -27,6 +27,8 @@ jobs:
           port: 21
           local-dir: ./app/
           server-dir: /sites/job-candys.jobmakombela.fr/
+          passive: true
+          concurrency: 1
           exclude: |
             **/.git*
             **/node_modules/**
