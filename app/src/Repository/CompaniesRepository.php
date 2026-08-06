@@ -40,4 +40,17 @@ class CompaniesRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findLastByUser($user): ?Companies
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.users', 'u')
+            ->where('u = :user')
+            ->setParameter('user', $user)
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
 }

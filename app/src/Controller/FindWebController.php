@@ -100,10 +100,13 @@ final class FindWebController extends AbstractController
 
             $this->entityManager->persist($company);
         }
+        $company->setFullName($nom);
         $company->setAddress($adresse);
         $company->setWebSite($website);
         $company->setLastCheck(new \DateTimeImmutable());
         $company->setUpdatedAt(new \DateTimeImmutable());
+
+        $company->addUser($this->getUser());
 
         $this->entityManager->flush();
 

@@ -44,18 +44,18 @@
 
 			{% if is_granted('ROLE_FREELANCE') %}
 				<div class="actions">
-					<button id="trouver-contact" class="btn primary" data-loading="Recherche...">
+					<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
 						Trouver contact
-					</button>
+					</a>
 
-					<button id="check-web" class="btn primary" data-loading="Vérification...">
+					<a href="#" id="check-web" class="btn primary" data-loading="Vérification...">
 						Check web
-					</button>
+					</a>
 				</div>
 
 			{% else %}
 				<div class="actions">
-					<button id="trouver-contact" class="btn primary" data-loading="Recherche...">Trouver contact</button>
+					<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">Trouver contact</a>
 				</div>
 
 			{% endif %}

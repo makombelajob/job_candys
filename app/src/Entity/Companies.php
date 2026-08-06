@@ -61,6 +61,9 @@ class Companies
     #[ORM\Column(length: 20)]
     private ?string $siret = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $fullName = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -260,6 +263,18 @@ class Companies
     public function setSiret(string $siret): static
     {
         $this->siret = $siret;
+
+        return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
+    public function setFullName(string $fullName): static
+    {
+        $this->fullName = $fullName;
 
         return $this;
     }
