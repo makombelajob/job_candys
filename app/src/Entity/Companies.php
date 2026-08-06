@@ -20,9 +20,6 @@ class Companies
     private ?string $webSite = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $email = null;
-
-    #[ORM\Column(length: 100, nullable: true)]
     private ?string $carrePage = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
@@ -64,6 +61,12 @@ class Companies
     #[ORM\Column(length: 255)]
     private ?string $fullName = null;
 
+    /**
+     * @var Collection<int, CompanyContacts>
+     */
+    #[ORM\OneToMany(targetEntity: CompanyContacts::class, mappedBy: 'company')]
+    private Collection $companyContacts;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -71,6 +74,7 @@ class Companies
         $this->lastCheck = new \DateTimeImmutable();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->companyContacts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -86,18 +90,6 @@ class Companies
     public function setWebSite(?string $webSite): static
     {
         $this->webSite = $webSite;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
 
         return $this;
     }
@@ -278,4 +270,35 @@ class Companies
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, CompanyContacts>
+     */
+    public function getCompanyContacts(): Collection
+    {
+        return $this->companyContacts;
+    }
+
+    public function addCompanyContact(CompanyContacts $companyContact): static
+    {
+        if (!$this->companyContacts->contains($companyContact)) {
+            $this->companyContacts->add($companyContact);
+            $companyContact->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompanyContact(CompanyContacts $companyContact): static
+    {
+        if ($this->companyContacts->removeElement($companyContact)) {
+            // set the owning side to null (unless already changed)
+            if ($companyContact->getCompany() === $this) {
+                $companyContact->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
