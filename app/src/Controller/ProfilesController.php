@@ -13,7 +13,7 @@ final class ProfilesController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         /**
-         * All rest of code here
+         * All rest of code here and hope get it
          */
         return $this->render('profiles/index.html.twig', [
             'controller_name' => 'ProfilesController',
