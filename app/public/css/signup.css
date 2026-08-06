@@ -77,6 +77,13 @@ body{
   padding:36px;
   border: 1px solid rgba(15,23,42,0.06);
 }
+.form-error-message,
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 5px;
+}
 
 .signup-header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
 .signup-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent-cta));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.05rem}

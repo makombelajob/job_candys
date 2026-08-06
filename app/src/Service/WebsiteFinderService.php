@@ -11,7 +11,6 @@ class WebsiteFinderService
         '.bzh',
     ];
 
-
     /**
      * Recherche le site internet d'une entreprise.
      */
@@ -38,7 +37,6 @@ class WebsiteFinderService
         return null;
     }
 
-
     /**
      * Vérifie si un domaine est accessible.
      */
@@ -64,7 +62,6 @@ class WebsiteFinderService
 
         curl_close($ch);
 
-
         if ($httpCode > 0 && $httpCode < 400 && !empty($html)) {
 
             $this->readHomepage($html, $url);
@@ -74,7 +71,6 @@ class WebsiteFinderService
 
         return null;
     }
-
 
     /**
      * Lecture simple de la page d'accueil.
@@ -86,7 +82,6 @@ class WebsiteFinderService
         $dom = new \DOMDocument();
 
         $dom->loadHTML($html);
-
 
         // Titre
         $titles = $dom->getElementsByTagName('title');
@@ -101,7 +96,6 @@ class WebsiteFinderService
                 "Titre : {$title}"
             );
         }
-
 
         // Description
         $metas = $dom->getElementsByTagName('meta');
@@ -121,7 +115,6 @@ class WebsiteFinderService
             }
         }
 
-
         // Texte visible
         $text = strip_tags($html);
 
@@ -131,13 +124,11 @@ class WebsiteFinderService
             $text
         );
 
-
         $this->log(
             "Début contenu : " .
             mb_substr($text, 0, 300)
         );
     }
-
 
     /**
      * Génère les variantes possibles du nom.
@@ -152,18 +143,15 @@ class WebsiteFinderService
             $clean
         );
 
-
         $words = preg_split(
             '/\s+/',
             $clean
         );
 
-
         $variants = [
             str_replace(' ', '', $clean),
             str_replace(' ', '-', $clean),
         ];
-
 
         if (
             !empty($words)
@@ -173,7 +161,6 @@ class WebsiteFinderService
 
             $variants[] = $words[0];
         }
-
 
         return array_values(
             array_unique($variants)

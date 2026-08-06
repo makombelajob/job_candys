@@ -10,38 +10,53 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\HunterEmailVerify;
+use Symfony\Component\Form\FormError;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        HunterEmailVerify $hunterEmailVerify
+        ): Response
     {
         $user = new Users();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
-            // Type of account
-            $accountType = $form->get('accountType')->getData();
-
-            if($accountType === 'freelance'){
-                $user->setRoles(['ROLE_FREELANCE']);
-            } else{
-                $user->setRoles([]);
+            if (!$hunterEmailVerify->verify($user->getEmail())) {
+                $form->get('email')->addError(
+                    new FormError('Cette adresse e-mail n\'est pas valide...')
+                );
             }
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            if ($form->isValid()) {
 
-            // do anything else you need here, like send an email
+                /** @var string $plainPassword */
+                $plainPassword = $form->get('plainPassword')->getData();
 
-            return $this->redirectToRoute('app_profiles');
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword($user, $plainPassword)
+                );
+
+                $accountType = $form->get('accountType')->getData();
+
+                if ($accountType === 'freelance') {
+                    $user->setRoles(['ROLE_FREELANCE']);
+                } else {
+                    $user->setRoles([]);
+                }
+
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_profiles');
+            }
         }
 
         return $this->render('registration/register.html.twig', [
