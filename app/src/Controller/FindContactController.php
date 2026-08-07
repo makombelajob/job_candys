@@ -44,7 +44,7 @@ final class FindContactController extends AbstractController
             ]);
         }
 
-        $emails = $this->websiteContactFinderService->findContacts($website);
+        $emails = $this->websiteContactFinderService->findContacts($website) ?? [];
 
         foreach ($emails as $email) {
 

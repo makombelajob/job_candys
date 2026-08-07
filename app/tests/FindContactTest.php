@@ -10,9 +10,7 @@ class WebsiteContactFinderService
         'contactez',
         'nous-contacter',
         'get-in-touch',
-        'localisation',
-        'adresse',
-        'agence',
+        'localisation'
     ];
 
     private const LEGAL_KEYWORDS = [
@@ -21,18 +19,6 @@ class WebsiteContactFinderService
         'legal',
         'legal-notice',
         'imprint',
-    ];
-
-    private const COMMON_CONTACT_PATHS = [
-        '/contact',
-        '/contact/',
-        '/contact-us',
-        '/contactez-nous',
-        '/nous-contacter',
-        '/localisation',
-        '/localisation.php',
-        '/mentions-legales',
-        '/mentions-legales.php',
     ];
 
     private const EXCLUDED_KEYWORDS = [
@@ -62,13 +48,26 @@ class WebsiteContactFinderService
             $website
         );
 
-        $links = array_merge(
-            $links,
-            $this->generateCommonPages($website)
+        foreach ([
+            '/contact',
+            '/contact/',
+            '/contact-us',
+            '/contactez-nous',
+            '/nous-contacter',
+            '/localisation',
+            '/localisation.php',
+            '/mentions-legales',
+            '/mentions-legales.php',
+        ] as $path) {
+            $links[] = $website . $path;
+        }
+
+        $links = array_values(
+            array_unique($links)
         );
 
         $emails = $this->findEmailsInPages(
-            array_unique($links),
+            $links,
             $website,
             true
         );
@@ -78,7 +77,7 @@ class WebsiteContactFinderService
         }
 
         return $this->findEmailsInPages(
-            array_unique($links),
+            $links,
             $website,
             false
         );
@@ -99,7 +98,9 @@ class WebsiteContactFinderService
                 continue;
             }
 
-            $this->log("Page analysée : {$link}");
+            $this->log(
+                "Page analysée : {$link}"
+            );
 
             $html = $this->loadPage($link);
 
@@ -120,20 +121,11 @@ class WebsiteContactFinderService
         return null;
     }
 
-    private function generateCommonPages(string $website): array
-    {
-        $pages = [];
-
-        foreach (self::COMMON_CONTACT_PATHS as $path) {
-            $pages[] = $website . $path;
-        }
-
-        return $pages;
-    }
-
     private function loadPage(string $url): ?string
     {
-        $this->log("Lecture : {$url}");
+        $this->log(
+            "Lecture : {$url}"
+        );
 
         $curl = curl_init($url);
 
@@ -153,7 +145,11 @@ class WebsiteContactFinderService
 
         curl_close($curl);
 
-        if ($code >= 200 && $code < 400 && !empty($html)) {
+        if (
+            $code >= 200 &&
+            $code < 400 &&
+            !empty($html)
+        ) {
             return $html;
         }
 
@@ -182,13 +178,8 @@ class WebsiteContactFinderService
                 continue;
             }
 
-            if (!str_starts_with($href, 'http')) {
-
-                if (str_starts_with($href, '/')) {
-                    $href = $baseUrl . $href;
-                } else {
-                    $href = $baseUrl . '/' . $href;
-                }
+            if (str_starts_with($href, '/')) {
+                $href = $baseUrl . $href;
             }
 
             if (str_starts_with($href, 'http')) {
@@ -200,8 +191,7 @@ class WebsiteContactFinderService
             array_unique($links)
         );
     }
-
-    private function isContactPage(string $url): bool
+        private function isContactPage(string $url): bool
     {
         return $this->containsKeyword(
             $url,
@@ -221,18 +211,11 @@ class WebsiteContactFinderService
         string $value,
         array $keywords
     ): bool {
-        $path = parse_url(
-            $value,
-            PHP_URL_PATH
-        );
-
-        $path = strtolower(
-            $path ?? ''
-        );
+        $value = strtolower($value);
 
         foreach ($keywords as $keyword) {
 
-            if (str_contains($path, $keyword)) {
+            if (str_contains($value, $keyword)) {
                 return true;
             }
         }
@@ -255,13 +238,16 @@ class WebsiteContactFinderService
             strtolower($domain)
         );
 
+        $emails = [];
+
+        /*
+         * Emails présents directement dans le HTML
+         */
         preg_match_all(
             '/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i',
             strip_tags($html),
             $matches
         );
-
-        $emails = [];
 
         foreach ($matches[0] as $email) {
 
@@ -269,20 +255,112 @@ class WebsiteContactFinderService
                 trim($email)
             );
 
-            if ($this->isExcluded($email)) {
-                continue;
-            }
-
             $emailDomain = substr(
                 strrchr($email, '@'),
                 1
             );
 
-            if ($emailDomain !== $domain) {
+            if (
+                $emailDomain === $domain &&
+                !$this->isExcluded($email)
+            ) {
+                $emails[] = $email;
+            }
+        }
+
+        /*
+         * Reconstruction des emails générés en JavaScript
+         *
+         * Exemple :
+         * var info = "info";
+         * window.location.href="mailto:" + info + "@" + "uuds.com";
+         */
+
+        preg_match_all(
+            '/(?:var|let|const)\s+([a-zA-Z0-9_]+)\s*=\s*[\'"]([^\'"]+)[\'"]/i',
+            $html,
+            $variables,
+            PREG_SET_ORDER
+        );
+
+        $vars = [];
+
+        foreach ($variables as $variable) {
+            $vars[$variable[1]] = $variable[2];
+        }
+
+        preg_match_all(
+            '/mailto:\s*"\s*\+\s*([a-zA-Z0-9_]+)\s*\+\s*"@"\s*\+\s*"([^"]+)"/i',
+            $html,
+            $mailtos,
+            PREG_SET_ORDER
+        );
+
+        foreach ($mailtos as $mailto) {
+
+            $name = $mailto[1];
+            $host = strtolower($mailto[2]);
+
+            if (!isset($vars[$name])) {
                 continue;
             }
 
-            $emails[] = $email;
+            $email = strtolower(
+                $vars[$name] . '@' . $host
+            );
+
+            $emailDomain = preg_replace(
+                '/^www\./',
+                '',
+                $host
+            );
+
+            if (
+                $emailDomain === $domain &&
+                !$this->isExcluded($email)
+            ) {
+                $emails[] = $email;
+            }
+        }
+
+        /*
+         * Deuxième forme :
+         *
+         * "mailto:" + info + "@" + "uuds.com"
+         */
+
+        preg_match_all(
+            '/"mailto:"\s*\+\s*([a-zA-Z0-9_]+)\s*\+\s*"@"\s*\+\s*"([^"]+)"/i',
+            $html,
+            $mailtos,
+            PREG_SET_ORDER
+        );
+
+        foreach ($mailtos as $mailto) {
+
+            $name = $mailto[1];
+            $host = strtolower($mailto[2]);
+
+            if (!isset($vars[$name])) {
+                continue;
+            }
+
+            $email = strtolower(
+                $vars[$name] . '@' . $host
+            );
+
+            $emailDomain = preg_replace(
+                '/^www\./',
+                '',
+                $host
+            );
+
+            if (
+                $emailDomain === $domain &&
+                !$this->isExcluded($email)
+            ) {
+                $emails[] = $email;
+            }
         }
 
         $emails = array_values(
@@ -291,63 +369,11 @@ class WebsiteContactFinderService
 
         usort(
             $emails,
-            function ($a, $b) {
-                return $this->emailScore($b)
-                    <=> $this->emailScore($a);
-            }
+            fn(string $a, string $b)
+                => $this->emailScore($b)
+                <=> $this->emailScore($a)
         );
 
         return $emails;
-    }
-
-    private function emailScore(string $email): int
-    {
-        $score = 0;
-
-        if (str_contains($email, 'contact')) {
-            $score += 100;
-        }
-
-        if (str_contains($email, 'info')) {
-            $score += 90;
-        }
-
-        if (str_contains($email, 'support')) {
-            $score += 80;
-        }
-
-        if (str_contains($email, 'question')) {
-            $score += 70;
-        }
-
-        if (str_contains($email, 'hr')) {
-            $score += 40;
-        }
-
-        if (str_contains($email, 'recruit')) {
-            $score += 30;
-        }
-
-        return $score;
-    }
-
-    private function isExcluded(string $email): bool
-    {
-        foreach (self::EXCLUDED_KEYWORDS as $keyword) {
-
-            if (str_contains($email, $keyword)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function log(string $message): void
-    {
-        file_put_contents(
-            'php://stderr',
-            $message . PHP_EOL
-        );
     }
 }

@@ -23,10 +23,19 @@
 			<a href="#">Statistiques</a>
 			<a href="{{ logout_path() }}">Déconnexion</a>
 
-		{% elseif app.user %}
+		{% elseif is_granted('ROLE_FREELANCE') %}
 
 			<a href="{{ path('app_profiles') }}">Accueil</a>
-			<a href="#">Profil</a>
+			<a href="#">Portfolio</a>
+			<a href="#">Website</a>
+			<a href="#">Cyber</a>
+			<a href="#">Clients</a>
+			<a href="{{ logout_path() }}">Déconnexion</a>
+
+		{% elseif is_granted('ROLE_USER') %}
+
+			<a href="{{ path('app_profiles') }}">Accueil</a>
+			<a href="{{ path('app_profiles_modify') }}">Profil</a>
 			<a href="#">Mes candidatures</a>
 			<a href="#">Mes favoris</a>
 			<a href="#">Messages</a>

@@ -6,6 +6,7 @@ class WebsiteFinderService
 {
     private const EXTENSIONS = [
         '.fr',
+        '.net',
         '.com',
         '.eu',
         '.bzh',

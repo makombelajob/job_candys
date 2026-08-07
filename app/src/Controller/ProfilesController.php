@@ -19,4 +19,16 @@ final class ProfilesController extends AbstractController
             'controller_name' => 'ProfilesController',
         ]);
     }
+
+    #[Route('/profiles/modify', name: 'app_profiles_modify')]
+    public function modifyProfiles(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        /**
+         * All rest of code here and hope get it and again
+         */
+        return $this->render('profiles/modify.html.twig', [
+            'controller_name' => 'ProfilesController',
+        ]);
+    }
 }

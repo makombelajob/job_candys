@@ -1,0 +1,512 @@
+<!DOCTYPE HTML>
+<html lang="FR">
+		<head>
+				<title>UUDS - Location</title> 
+
+					 		
+<!--script src="js/jquery-1.11.0.min.js"></script-->
+<script src="js/jquery-3.6.0.min.js"></script>
+		
+<script type="text/javascript">	
+
+				<!--/////////////////////////////////////////////////////////////////////// MENU COMP -->  
+					var openDiv = "";
+							var nDiv = 0; 
+							function switchDiv(n){
+							  var id;
+							  if (nDiv==n)
+								n = 0;
+								
+							switch(n){ 
+								case 0:
+									 id = "";
+									 break;
+								case 1:
+									 id = "JSCompagnie";
+									 break;
+								case 2:
+									 id = "JSServices";
+									 break;
+								case 3:
+									 id = "JSProduits";
+									 break;
+							  }  	 
+							  if (openDiv!="")
+								 document.getElementById(openDiv).style.display = "none";
+							  if (id!="")
+								 document.getElementById(id).style.display = "block";
+									  openDiv = id;
+									  nDiv = n;
+							}
+				<!--/////////////////////////////////////////////////////////////////////// MENU COMP END-->  
+				
+				<!--/////////////////////////////////////////////////////////////////////// MENU SMART -->  				
+                            $(function() {
+                                var menu_ul = $('#movmenu .menu-smart > li > ul'),
+                                    menu_a  = $('#movmenu .menu-smart > li > a');
+                               		menu_ul.hide();
+										 
+                                menu_a.click(function(e) {
+                                    e.preventDefault();
+                                    if(!$(this).hasClass('active')) {
+                                        menu_a.removeClass('active');
+                                        menu_ul.filter(':visible').slideUp('normal');
+                                        $(this).addClass('active').next().stop(true,true).slideDown('normal');
+                                    } else {
+                                        $(this).removeClass('active');
+                                        $(this).next().stop(true,true).slideUp('normal');
+                                    }
+                                });
+                            });
+				<!--/////////////////////////////////////////////////////////////////////// MENU SMART END-->  	
+				
+				<!--/////////////////////////////////////////////////////////////////////// MASK SOUS MENU COMP -->  	
+							function objmaskinit(initialization){
+								$(initialization).animate({left: "==0px"},10);  
+								}
+							function objmask(bouge){
+								$(bouge).animate({left: "-=100000px"},10);  
+								}
+				<!--/////////////////////////////////////////////////////////////////////// MASK END--> 
+				
+				<!--/////////////////////////////////////////////////////////////////////// BACKTOP -->  	
+				jQuery(function(){
+					$(function () {
+						$(window).scroll(function () { 
+							if ($(this).scrollTop() > 280 ) {  // X pixels du haut de page,
+								$('#backtop').css('visibility','visible '); // Affichage du BT
+							} else { 
+								$('#backtop').removeAttr( 'style' ); // Suppr CSS affectés par javascript
+							}
+						});
+					});
+				});
+				<!--/////////////////////////////////////////////////////////////////////// BACKTOP END-->  
+				
+				
+				 <!---------------------------------------------------EMAIL---------------------------------------------------------->          
+ 
+				   function email1(info){
+					  window.location.href="mailto:" + info + "@" + "uuds.com";
+				   }
+				   
+				   function email2(recrut){
+					  window.location.href="mailto:" + recrut + "@" + "uuds.com";
+				   }
+				   
+				   function email3(suppcli){
+					  window.location.href="mailto:" + suppcli + "@" + "uudsaero.net";
+				   }
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				
+</script>   		 
+
+  <!-------------------------------------------------- META ---------------------------------------------------------->		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-------------------------------------------------- LINK ---------------------------------------------------------->		
+		<link href="css/reset.css" rel="stylesheet" type="text/css" media="screen">
+        <link href="css/style.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/header.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/photos.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/footer.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/color.css" rel="stylesheet" type="text/css" media="screen">
+		
+		<!--/////////////////////////////////////////////////////////////////////// FONT --> 
+		<link href="css/police.css" rel="stylesheet" type="text/css" media="screen">
+		
+		<link href="https://fonts.googleapis.com/css?family=Oswald:700" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet"> 
+		
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">   
+		
+		<!--/////////////////////////////////////////////////////////////////////// NAVIG -->  		
+		<link href="css/menu-comp.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/menu-topright.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/menu-smart.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/menu-lang.css" rel="stylesheet" type="text/css" media="screen">
+
+		
+
+		<link href="css/help.css" rel="stylesheet" type="text/css" media="screen">
+		<link href="css/backtop.css" rel="stylesheet" type="text/css" media="screen">
+
+
+		
+
+		
+		
+		 
+		</head>
+<body>
+
+	<div id="wrapper">
+           
+					<div id="menu-comp-bloc">
+						<div id="menu-comp">
+							<li><a onmouseover="objmaskinit('#maskPage'); switchDiv(1)">Groupe</a><div class="trait"></div></li>
+							<li><a onmouseover="objmaskinit('#maskPage'); switchDiv(2)">Services</a><div class="trait"></div></li>
+							<li><a onmouseover="objmaskinit('#maskPage'); switchDiv(3)">Produits</a><div class="trait"></div></li>
+						</div>		
+					</div>		
+					
+					<div id="maskPage" onmouseover="objmask('#maskPage'); switchDiv(0)">
+					</div>
+					
+				 <nav class="voletMenu">
+				 			<div class="MenuCompG" id="JSCompagnie">
+									<div class="MCpad">
+									
+										<div class="closeX" onclick="switchDiv(0)"><i class="fa-solid fa-square-xmark"></i>
+										</div>
+										
+										<div class="titre">Groupe										</div>
+												<div class="F-left McolonD"> 
+													<li>
+															<ul>
+																<li><a href="profil.php?lang=fr">Profil</a></li>
+																<li><a href="strategie.php?lang=fr">Stratégie</a></li>
+																<li><a href="index.php?lang=fr#ACRexpertise">Expertises</a></li>
+																<li><a href="qualite.php?lang=fr">Qualité</a></li>
+															</ul>
+													</li>
+												</div>
+												<div class="F-left McolonD"> 
+													<li>
+															<ul>
+																<li><a href="rse.php?lang=fr">RSE, aviation durable</a></li>
+																<li><a href="innovation.php?lang=fr">Innovation</a></li>
+																<li><a href="index.php?lang=fr#ACRworldwide">Présence Mondiale</a></li>
+																<li><a href="localisation.php?lang=fr">Localisation / Contacts</a></li>
+															</ul>
+													</li>
+												</div>
+									</div>
+								<div class="closeRoll" onmouseover="switchDiv(0)">
+								</div>
+							</div>
+							 
+							<div class="MenuCompS" id="JSServices">
+									<div class="MCpad"> 
+									
+										<div class="closeX" onclick="switchDiv(0)"><i class="fa-solid fa-square-xmark"></i>
+										</div>
+										
+										<div class="titre">Services										</div>
+											<div class="F-left McolonD"> 
+												<li>
+													<ul>
+														<li><a href="cabin-interios-design.php?lang=fr">Design intérieur cabine</a></li>
+														<li><a href="certification.php?lang=fr">Certification</a></li>
+														<li><a href="monument-manufacturing.php?lang=fr">Fabrication d'équipements cabine</a></li>
+														<li><a href="electrical-manufacturing.php?lang=fr">Fabrication électrique</a></li>
+													</ul>
+												</li>
+											</div>
+											<div class="F-left McolonD"> 
+													<li>
+															<ul>
+																<li><a href="spare-parts-manufacturing.php?lang=fr">Support pièces de rechange</a></li>
+																<li><a href="equipment-mro.php?lang=fr">MRO équipements</a></li>
+																<li><a href="equipment-modification.php?lang=fr">Modification des équipements cabine</a></li>
+																<li><a href="eco-restore.php?lang=fr">ECO Restore</a></li>
+															</ul>
+													</li>
+											</div>
+									</div>
+								<div class="closeRoll" onmouseover="switchDiv(0)">
+								</div>
+							</div>
+							 
+							<div class="MenuCompP" id="JSProduits">
+									<div class="MCpad"> 
+									
+										<div class="closeX" onclick="switchDiv(0)"><i class="fa-solid fa-square-xmark"></i>
+										</div>
+										
+										<div class="titre">Produits										</div>
+											<div class="F-left McolonS"> 
+												<li>
+														<ul>
+															<li><a href="medical-equipment.php?lang=fr">Equipements médicaux</a></li>
+															<li><a href="cargo-conversion.php?lang=fr">Conversion cabine <i class='fa-solid fa-arrows-left-right'></i> cargo</a></li>
+															<li><a href="cabin-interiors.php?lang=fr">Meubles cabine</a></li>
+															<li><a href="spare-part.php?lang=fr">Pièces détachées</a></li>
+														</ul>
+												</li>
+											</div>
+									</div>
+								<div class="closeRoll" onmouseover="switchDiv(0)">
+								</div>
+							</div>	
+					
+                </nav>
+
+	<div id="movmenu">
+			<div>
+					<a onclick="$('#movmenu').toggle(400);" href="#"><i class="fa fa-times fa-lg"></i></a>
+			</div>
+			<div id="acc">
+					<a onclick="$('#movmenu').toggle(400);" href="index.php">Aero.UUDS.com</a>
+			</div>
+			
+         <nav>
+                  <ul class="menu-smart">
+                        <li class="menu_ttr1"><a href="#" >Groupe</a>
+                            <ul>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="profil.php?lang=fr">Profil</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="strategie.php?lang=fr">Stratégie</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="index.php?lang=fr#ACRexpertise">Expertises</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="qualite.php?lang=fr">Qualité</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="rse.php?lang=fr">RSE, aviation durable</a></li>     
+                                <li><a onclick="$('#movmenu').toggle(400);" href="innovation.php?lang=fr">Innovation</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="index.php?lang=fr#ACRworldwide">Présence Mondiale</a></li>   	
+								<li><a onclick="$('#movmenu').toggle(400);" href="localisation.php?lang=fr">Localisation / Contacts</a></li>									
+							<!--div id="ecart">
+							</div>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="page.php">Localisation</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="page.php">Présence Mondiale</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="page.php">Contacts</a></li-->      
+                            </ul>
+                        </li>
+                        <li class="menu_ttr2"><a href="#">Services</a>
+							<ul>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="cabin-interios-design.php?lang=fr">Design intérieur cabine</a></li>    
+                                <li><a onclick="$('#movmenu').toggle(400);" href="certification.php?lang=fr">Certification</a></li>	
+                                <li><a onclick="$('#movmenu').toggle(400);" href="monument-manufacturing.php?lang=fr">Fabrication d'équipements cabine</a></li>
+								<li><a onclick="$('#movmenu').toggle(400);" href="electrical-manufacturing.php?lang=fr">Fabrication électrique</a></li>
+								<li><a onclick="$('#movmenu').toggle(400);" href="spare-parts-manufacturing.php?lang=fr">Support pièces de rechange</a></li>    
+                                <li><a onclick="$('#movmenu').toggle(400);" href="equipment-mro.php?lang=fr">MRO équipements</a></li>	
+                                <li><a onclick="$('#movmenu').toggle(400);" href="equipment-modification.php?lang=fr">Modification des équipements cabine</a></li>
+								<li><a onclick="$('#movmenu').toggle(400);" href="eco-restore.php?lang=fr">ECO Restore</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu_ttr3"><a href="#">Produits</a>
+                            <ul>
+								<li><a onclick="$('#movmenu').toggle(400);" href="medical-equipment.php?lang=fr">Equipements médicaux</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="cargo-conversion.php?lang=fr">Conversion cabine <i class='fa-solid fa-arrows-left-right'></i> cargo</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="cabin-interiors.php?lang=fr">Meubles cabine</a></li>
+                                <li><a onclick="$('#movmenu').toggle(400);" href="spare-part.php?lang=fr">Pièces détachées</a></li>
+                            </ul>
+                        </li>
+                </ul>            
+        </nav>
+		
+		<nav>	
+				<ul id="MSlang">
+						<li class="MSlangBloc select">
+							<a onclick="$('#movmenu').toggle(400);" href="?lang=fr">FR</a>
+						</li>
+						<li class="MSlangBloc">
+							<a onclick="$('#movmenu').toggle(400);" href="?lang=en">EN</a>
+						</li>
+						<li class="MSlangBloc supprZH">
+							<a onclick="$('#movmenu').toggle(400);" href="?lang=zh">ZH</a>
+						</li>
+				</ul>
+	     </nav>
+</div>
+	 
+ 
+<!------------------------------------------------------------------------------------------------------------------------------- MAIN -->  
+		<main>  
+           	
+					<div id="bloc-entete" onmouseover="switchDiv(0)">
+					
+							<div id="top-menu" >
+									
+										<div>
+											 <div id="logo" >
+													<a href="index.php?lang=fr"><img src="img/logo.png" alt="uuds" title="www.aerouuds.com"></a>
+											</div>
+										</div>
+										
+										<div id="certif" >
+												<h3>
+														EASA DOA / POA / MOA
+												</h3> 
+										</div>
+
+										
+									<div id="faBloc">
+											<a onclick="$('#movmenu').toggle(400);" href="#"><i class="fa fa-bars fa-lg"></i></a>
+									</div>
+													
+										<nav>	
+												<ul id="menu-lang" >
+														<li><a href="?lang=fr">FR</a>
+																<ul id="sub-menulang">
+																		<li><a href="?lang=en">EN</a></li>
+																		<li class="supprZH"a href="?lang=zh">ZH</a></li>
+																</ul>
+														</li>
+												</ul>
+										</nav>
+								
+							</div>
+								
+							<div id="bloc-slogan">
+										<!--div id="slogG" >
+										 </div-->
+											<div id="slogan" >
+													<h1>
+															Turnkey solutions for best passengers experience													</h1> 
+													<div id="ssh1" >
+															'Life cycle support'													</div>
+											</div>
+										<!--div id="slogD" >
+										</div-->
+							</div>
+
+					</div>﻿
+<div id="bt-help">
+
+	<div id="bloc_bts">
+		<div id="bt-CS">
+				<a class="colorHelp" href="https://csm.uudsaero.net/">Support client</a>
+		</div>
+		
+		<div id="bt-RC">
+				<a class="colorHelp" href="recruitment.php?lang=fr">Recrutement</a>
+		</div>
+	
+	</div>
+
+	<!--div id="helpclosed">
+				<div id="help">
+									<p class="colorHelp">
+											• Email : <a class="colorlink" href="javascript:email1('info-aero')">info-aero...</a></br>
+											?...<php echo HELP_TELMAIL; ?>
+									</p>
+									<h6 class="colorHelpTtr">
+											?...<php echo HELP_PERM; ?> 
+									</h6>   
+									<p class="colorHelp">
+											?...<php echo HELP_PERM_TEL; ?>
+									</p>
+					
+					<a href="#help" class="ouvrir">?...<php echo HELP_OPEN; ?></a>
+					<a href="#helpclosed" class="fermer">?...<php echo HELP_CLOSE; ?></a>
+
+			</div>
+	</div-->
+	
+</div>
+ 
+<!----------------------------------------------------------------------------------------------------------------------------- CONTAINT -->  
+			<div id="container">
+			
+					<div class="blocs F-left">	
+					
+							<div class="bandeau_img100 F-left">	
+									<div class="box-img" id="img0-Location">
+									</div>      
+							</div> 
+							<div class="bloc_GrosTitreCentral F-left">	
+									<div class="GTC">
+											Localisation 
+									</div>      
+							</div> 	
+							
+					</div>
+
+					<div class="blocs F-left">	
+
+							<div class="bloc_txtP_100M F-right">									 
+									<h6>
+											Le siège social d’UUDS est idéalement situé près de l’aéroport Roissy Charles de Gaulle dans la zone d’activité du Moulin. </br>
+		Dans un espace de plus de 5 000 m² avec : Ateliers de production, zone de maintenance, zone de stockage et département administratif.									</h6>
+							</div>	
+							
+							<div class="bloc_txtP_100Mini F-right">						
+									<h4>
+											Support & services clients (AOG) : 
+									</h4>    
+									<p class="border animP">
+											
+											• <span>Tél.</span> : +33 (0) 6.77.14.20.07 </br>
+											• <span>Email </span>: <a class="colorlink" href="javascript:email3('csm')">Support & services clients...</a></br></br>
+									</p>
+									
+									<!--h4>
+											</*?php echo M1_P6_B1_TR4; ?*/> 
+									</h4>    
+									<p class="border animP">
+											</*?php echo M1_P6_B1_TXT4; ?*/>
+									</p-->
+							</div>
+							
+							<div class="bloc_txtP_100Mini F-right">									 
+									<h4>
+											Groupe UUDS 
+									</h4>   
+									<p class="border animP">
+											ZAC du Moulin - 12, rue du Meunier</br>
+												95700 - ROISSY EN FRANCE</br>
+												FRANCE</br></br>
+												 									</p>
+									
+									<h4>
+											Contact : 
+									</h4>   
+									<p class="border animP">
+											
+												• <span>Tél.</span> : +33 (0) 1.73.27.20.00
+												 </br>
+											• <span>Email </span>: <a class="colorlink" href="javascript:email1('info-aero')">info-aero...</a>
+									</p>
+							</div>	
+							
+								
+
+					</div>
+
+					
+					<div class="blocs F-left">	
+							<div class="bloc_titre">	
+									 <!--h2>
+											Bloc End
+									</h2-->    
+							</div>		
+					</div>
+			</div>       
+<!------------------------------------------------------------------------------------------------- FOOTER -->                   
+                 <footer>
+						 	
+	<div id="ecovadis" class="F-left">
+             <img src="img/ecovadis.png" alt="ecovadis" title="ecovadis">
+     </div>
+	 
+   	<div id="blocFmenu" class="F-left">             	 
+			<nav>
+					<ul>
+						<li><a href="legal_notice.php?lang=fr">Mentions Legales</a></li>
+						<li><a href="recruitment.php?lang=fr">Recrutement</a></li>
+						<li><a href="localisation.php?lang=fr">Contact</a></li>
+					</ul>
+			 </nav>
+	</div>
+	
+	<div id="blocFtxt" class="F-right">    
+				<p>
+					&copy;2024 - www.aero.uuds.com | Tous droit réservés.				<p>
+	</div>     
+                </footer>
+<!------------------------------------------------------------------------------------------------- END -->                     
+		</main><!--main end-->
+	</div><!--wrapper end-->   
+
+						 	
+            <div id="backtop">
+                 <a href="#"><img src="navig/top.png" title="top"></a>
+    		</div>   
+</body>     
+</html>
