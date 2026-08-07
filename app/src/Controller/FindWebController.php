@@ -92,6 +92,7 @@ final class FindWebController extends AbstractController
         $website = (!empty($resultat) && $resultat !== 'Aucun site trouvé') ? $resultat : null;
 
         $company = $this->companiesRepository->findOneBy(['siret' => $siret]);
+        dd($company);
 
         if(!$company){
             $company = new Companies();
