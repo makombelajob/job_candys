@@ -1,3 +1,5 @@
 mysql
 .idea
 /vendor/
+/app/.env
+/app/.env.test

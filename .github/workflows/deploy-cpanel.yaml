@@ -34,4 +34,6 @@ jobs:
             **/node_modules/**
             **/*.map
             **/*:Zone.Identifier
+            ./app/.env
+            ./app/.env.test
           dry-run: false
