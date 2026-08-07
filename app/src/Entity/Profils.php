@@ -22,10 +22,10 @@ class Profils
     private ?string $city = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $defaultCv = null;
+    private ?string $defaultCv;
 
     #[ORM\Column(length: 50)]
-    private ?string $defaultLetter = null;
+    private ?string $defaultLetter;
 
     #[ORM\Column(length: 100)]
     private ?string $linkedin = null;

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AdminController!
+{% endblock %}
+
+{% block body %}
+	{% block stylesheets %}
+		{{ parent() }}
+		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
+	{% endblock %}
+
+	<div class="full-screen">
+		<div class="card">
+			<h1>Envoyer une candidature</h1>
+
+			<div class="info">
+				{% if company is defined %}
+					<h3>
+						Candidature pour :
+						{{ company.name }}
+					</h3>
+				{% endif %}
+
+				{{ form_start(form, {
+                    attr: {
+                        enctype: 'multipart/form-data'
+                    }
+                }) }}
+				<div class="form-group">
+					{{ form_row(form.contact) }}
+				</div>
+				<div class="form-group">
+					<h3>CV</h3>
+					{{ form_row(form.defaultCv) }}
+					{{ form_row(form.cv) }}
+
+				</div>
+
+				<div class="form-group">
+
+					<h3>Lettre de motivation</h3>
+
+					{{ form_row(form.defaultLetter) }}
+
+					{{ form_row(form.lettreMotivation) }}
+
+				</div>
+				<div class="form-group">
+
+					{{ form_row(form.message) }}
+
+				</div>
+				<div class="actions">
+
+					<button type="submit" class="btn btn-primary">
+						Envoyer ma candidature
+					</button>
+
+				</div>
+				{{ form_end(form) }}
+
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
