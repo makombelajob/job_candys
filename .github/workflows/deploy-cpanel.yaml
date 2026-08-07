@@ -17,6 +17,12 @@ jobs:
         run: |
           echo "Aucune étape de build configurée"
 
+      - name: Check deployment files
+        run: |
+          echo "Checking Symfony templates..."
+          test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
+          ls -la app/templates/bundles/TwigBundle/Exception/
+
       - name: Sync files via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -34,6 +40,6 @@ jobs:
             **/node_modules/**
             **/*.map
             **/*:Zone.Identifier
-            **./app/*.env
-            **./app/*.env.*test
+            **/.env
+            **/.env.*
           dry-run: false
