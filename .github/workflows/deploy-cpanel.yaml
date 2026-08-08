@@ -1,4 +1,4 @@
-name: Deploy via Rsync
+name: Deploy Job Candys
 
 on:
   push:
@@ -10,17 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Vérification des fichiers importants
       - name: Check deployment files
         run: |
           echo "Checking Symfony templates..."
+
           test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
+
+          echo "Template found:"
           ls -la app/templates/bundles/TwigBundle/Exception/
 
+      # 3. Déploiement vers le Raspberry Pi
       - name: Deploy via rsync
-        uses: burnett01/rsync-deployments@7.0.2
+        uses: burnett01/rsync-deployments@v8
         with:
           switches: -avz
           path: ./
@@ -29,3 +35,4 @@ jobs:
           remote_user: ${{ secrets.FTP_USER }}
           remote_key: ${{ secrets.DEPLOY_SSH_KEY }}
           remote_port: 22
+
