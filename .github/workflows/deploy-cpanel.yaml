@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Vérification des fichiers importants
       - name: Check deployment files
         run: |
           echo "Checking Symfony templates..."
@@ -24,11 +22,10 @@ jobs:
           echo "Template found:"
           ls -la app/templates/bundles/TwigBundle/Exception/
 
-      # 3. Déploiement vers le Raspberry Pi
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@v8
         with:
-          switches: -avz
+          switches: -azv --no-group --no-owner
           path: ./
           remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/
           remote_host: ${{ secrets.FTP_HOST }}
