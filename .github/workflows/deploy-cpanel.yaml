@@ -25,7 +25,7 @@ jobs:
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@v8
         with:
-          switches: -azv --no-group --no-owner
+          switches: -azv --no-group --no-owner --omit-dir-times
           path: ./app/
           remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/app/
           remote_host: ${{ secrets.FTP_HOST }}
