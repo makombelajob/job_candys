@@ -32,7 +32,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./app/
-          server-dir: /sites/job-candys.jobmakombela.fr/
+          server-dir: /sites/candys-jobs.jobmakombela.fr/
           passive: true
           concurrency: 1
           exclude: |
