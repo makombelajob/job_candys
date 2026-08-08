@@ -1,4 +1,4 @@
-name: Deploy via FTPS
+name: Deploy via SFTP
 
 on:
   push:
@@ -23,23 +23,24 @@ jobs:
           test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
           ls -la app/templates/bundles/TwigBundle/Exception/
 
-      - name: Sync files via FTPS
+      - name: Sync files via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./app/
-          server-dir: /sites/candys-jobs.jobmakombela.fr/
-          passive: true
-          concurrency: 1
+          protocol: sftp
+          port: 22
+          local-dir: ./
+          server-dir: /var/www/online-webs/job-candys.jobmakombela.fr/
           exclude: |
             **/.git*
+            **/.idea/**
             **/node_modules/**
             **/*.map
             **/*:Zone.Identifier
             **/.env
             **/.env.*
           dry-run: false
+          log-level: verbose
+
