@@ -112,10 +112,11 @@ class CompanyEditType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'mapped' => false,
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'contact@entreprise.com',
+                    'autocomplete' => 'email',
                 ],
                 'constraints' => [
                     new Email(

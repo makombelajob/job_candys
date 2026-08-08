@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\CompanyContacts;
 use App\Repository\CompaniesRepository;
+use App\Repository\CompanyContactsRepository;
 use App\Service\WebsiteContactFinderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -84,6 +85,7 @@ final class FindContactController extends AbstractController
         string $siret,
         Request $request,
         EntityManagerInterface $entityManager,
+        CompanyContactsRepository $companyContactsRepository,
     ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -94,17 +96,42 @@ final class FindContactController extends AbstractController
         }
 
         $form = $this->createForm(CompanyEditType::class, $company);
+        $contact = $company->getCompanyContacts()->first();
+        if($contact !== false) {
+            $form->get('email')->setData($contact->getEmail());
+
+        }
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $email = trim($form->get('email')->getData());
+
+            $contact = $company->getCompanyContacts()->first();
+
+            if ($contact !== false) {
+                // Contact existant : on met simplement à jour l'email
+                $contact->setEmail($email);
+            } else {
+                // Aucun contact : on en crée un
+                $contact = new CompanyContacts();
+                $contact->setEmail($email);
+                $contact->setCompany($company);
+
+                $entityManager->persist($contact);
+            }
 
             $company->setUpdatedAt(new \DateTimeImmutable());
 
             $entityManager->persist($company);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_edit_contact', [
+            $this->addFlash(
+                'success',
+                'Le contact a été enregistré avec succès.'
+            );
+
+            return $this->redirectToRoute('app_spontaneous_application_send', [
                 'siret' => $company->getSiret(),
             ]);
         }
