@@ -1,4 +1,4 @@
-name: Deploy via SSH
+name: Deploy via Rsync
 
 on:
   push:
@@ -19,16 +19,13 @@ jobs:
           test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
           ls -la app/templates/bundles/TwigBundle/Exception/
 
-      - name: Deploy files via SCP
-        uses: appleboy/scp-action@v1
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@7.0.2
         with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          source: "."
-          target: "/var/www/online-webs/job-candys.jobmakombela.fr/"
-          overwrite: true
-          strip_components: 0
-          tar_tmp_path: "/tmp"
-          debug: true
+          switches: -avz
+          path: ./
+          remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/
+          remote_host: ${{ secrets.FTP_HOST }}
+          remote_user: ${{ secrets.FTP_USER }}
+          remote_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          remote_port: 22
