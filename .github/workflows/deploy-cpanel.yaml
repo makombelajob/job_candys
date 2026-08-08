@@ -26,8 +26,8 @@ jobs:
         uses: burnett01/rsync-deployments@v8
         with:
           switches: -azv --no-group --no-owner
-          path: ./
-          remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/
+          path: ./app/
+          remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/app/
           remote_host: ${{ secrets.FTP_HOST }}
           remote_user: ${{ secrets.FTP_USER }}
           remote_key: ${{ secrets.DEPLOY_SSH_KEY }}
