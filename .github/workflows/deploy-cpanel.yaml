@@ -1,4 +1,4 @@
-name: Deploy via SFTP
+name: Deploy via SFTP/SSH
 
 on:
   push:
@@ -6,16 +6,12 @@ on:
       - main
 
 jobs:
-  ftp-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Build
-        run: |
-          echo "Aucune étape de build configurée"
 
       - name: Check deployment files
         run: |
@@ -23,24 +19,15 @@ jobs:
           test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
           ls -la app/templates/bundles/TwigBundle/Exception/
 
-      - name: Sync files via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy files via SCP
+        uses: appleboy/scp-action@v1
         with:
-          server: ${{ secrets.FTP_HOST }}
+          host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: sftp
           port: 22
-          local-dir: ./
-          server-dir: /var/www/online-webs/job-candys.jobmakombela.fr/
-          exclude: |
-            **/.git*
-            **/.idea/**
-            **/node_modules/**
-            **/*.map
-            **/*:Zone.Identifier
-            **/.env
-            **/.env.*
-          dry-run: false
-          log-level: verbose
-
+          source: "."
+          target: "/var/www/online-webs/job-candys.jobmakombela.fr/"
+          overwrite: true
+          rm: false
+          strip_components: 0
