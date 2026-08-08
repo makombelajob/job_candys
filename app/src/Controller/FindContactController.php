@@ -8,7 +8,9 @@ use App\Service\WebsiteContactFinderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Attribute\Route;use App\Entity\Companies;
+use App\Form\CompanyEditType;
+use Symfony\Component\HttpFoundation\Request;
 
 final class FindContactController extends AbstractController
 {
@@ -75,4 +77,42 @@ final class FindContactController extends AbstractController
             'emails' => $emails,
         ]);
     }
+
+
+    #[Route('/edit/contact/{siret}', name: 'app_edit_contact')]
+    public function edit(
+        string $siret,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $company = $entityManager->getRepository(Companies::class)->findOneBy(['siret' => $siret]);
+
+        if (!$company) {
+            throw $this->createNotFoundException('Entreprise introuvable.');
+        }
+
+        $form = $this->createForm(CompanyEditType::class, $company);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $company->setUpdatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($company);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_edit_contact', [
+                'siret' => $company->getSiret(),
+            ]);
+        }
+
+        return $this->render('find_contact/edit_contact.html.twig', [
+            'form' => $form->createView(),
+            'company' => $company,
+        ]);
+    }
+
 }

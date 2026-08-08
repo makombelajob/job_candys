@@ -60,6 +60,9 @@ class Profils
     #[ORM\OneToMany(targetEntity: ContactsAdmin::class, mappedBy: 'profils')]
     private Collection $contactsAdmin;
 
+    #[ORM\Column(length: 100)]
+    private ?string $photoProfil = null;
+
     public function __construct()
     {
         $this->Apllications = new ArrayCollection();
@@ -278,6 +281,18 @@ class Profils
                 $contactsAdmin->setProfils(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPhotoProfil(): ?string
+    {
+        return $this->photoProfil;
+    }
+
+    public function setPhotoProfil(string $photoProfil): static
+    {
+        $this->photoProfil = $photoProfil;
 
         return $this;
     }

@@ -22,14 +22,25 @@
 	<div class="example-wrapper">
 		<h1>Hello</h1>
 
-		This friendly message is coming from:
-		<ul>
-			<li>Your controller at
-				<code>/var/www/html/src/Controller/modifyController.php</code>
-			</li>
-			<li>Your template at
-				<code>/var/www/html/templates/profiles/modify.html.twig</code>
-			</li>
-		</ul>
+		{{ form_start(form) }}
+
+		{{ form_row(form.firstName) }}
+		{{ form_row(form.lastName) }}
+		{{ form_row(form.email) }}
+
+		{{ form_row(form.phone) }}
+		{{ form_row(form.city) }}
+		{{ form_row(form.defaultCv) }}
+		{{ form_row(form.defaultLetter) }}
+		{{ form_row(form.linkedin) }}
+		{{ form_row(form.website) }}
+		{{ form_row(form.photoProfil) }}
+
+		<button type="submit" class="btn btn-primary">
+			Enregistrer
+		</button>
+
+		{{ form_end(form) }}
+
 	</div>
 {% endblock %}

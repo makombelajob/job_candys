@@ -29,3 +29,7 @@ services:
     App\Service\HunterEmailVerify:
         arguments:
             $hunterApiKey: '%hunter.api_key%'
+
+    #App\Service\TechnologyDetectorService:
+        #arguments:
+           # $apiKey: '%env(WAPPALYZER_API_KEY)%'

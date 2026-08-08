@@ -110,11 +110,5 @@ final class SpontaneousApplicationController extends AbstractController
         );
     }
 
-    #[Route('/spontaneous/application/add/{siret}', name: 'app_company_contact_add')]
-    public function add(): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        return $this->render('spontaneous_application/addContact.html.twig'
-        );
-    }
+
 }

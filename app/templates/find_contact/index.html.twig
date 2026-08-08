@@ -59,7 +59,8 @@
 							Postuler
 						</a>
 					{% else %}
-						<a href="{{ path('app_company_contact_add', {'siret': company.siret}) }}" class="btn primary">
+						<a href="{{ path('app_edit_contact', {'siret': company.siret}) }}" class="btn primary">
+
 							Ajouter manuellement un contact
 						</a>
 					{% endif %}
