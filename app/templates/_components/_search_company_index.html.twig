@@ -9,6 +9,11 @@
 	<div class="wrapper">
 
 		<h1>Recherche entreprise</h1>
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success">
+				{{ message }}
+			</div>
+		{% endfor %}
 
 		<div class="controls">
 

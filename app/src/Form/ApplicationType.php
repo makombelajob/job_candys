@@ -134,8 +134,10 @@ class ApplicationType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'rows' => 5,
-                    'placeholder' => 'Votre message rapide...',
                 ],
+                'data' => "Bonjour, 
+Je me permets de vous contacter afin de vous proposer ma candidature spontanée au sein de votre entreprise. Vous trouverez mon CV ainsi que ma lettre de motivation en pièces jointes. Je reste à votre disposition pour échanger avec vous et vous présenter plus en détail mon parcours. Cordialement
+                ",
             ]);
     }
 

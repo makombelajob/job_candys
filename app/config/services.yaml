@@ -36,3 +36,5 @@ services:
         arguments:
             $uploadDirectory: '%app.upload_directory%'
             $tempDirectory: '%app.upload_temp_directory%'
+
+            

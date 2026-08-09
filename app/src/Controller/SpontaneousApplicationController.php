@@ -10,6 +10,7 @@ use App\Service\InseeApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\EmailService;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class SpontaneousApplicationController extends AbstractController
@@ -55,6 +56,7 @@ final class SpontaneousApplicationController extends AbstractController
         Request $request,
         InseeApiService $inseeApiService,
         CompaniesRepository $companiesRepository,
+        EmailService $emailService,
     ): Response {
 
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -89,19 +91,80 @@ final class SpontaneousApplicationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $contact = $form->get('contact')->getData();
+
             $email = null;
+
             if ($contact) {
                 $email = $contact->getEmail();
             }
+
+            // Aucun email disponible pour le contact
+            if (!$email) {
+                $this->addFlash(
+                    'error',
+                    'Le contact sélectionné ne possède pas d’adresse email.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_spontaneous_application',
+                    ['siret' => $siret]
+                );
+            }
+
             $message = $form->get('message')->getData();
-
             $cv = $form->get('cv')->getData();
-
             $lettreMotivation = $form->get('lettreMotivation')->getData();
+
+            $attachments = [];
+
             /**
-             *  Trate everything here
+             * CV
              */
+            if ($cv) {
+                $attachments[] = [
+                    'path' => $cv->getPathname(),
+                    'name' => $cv->getClientOriginalName(),
+                ];
+            }
+
+            /**
+             * Lettre de motivation
+             */
+            if ($lettreMotivation) {
+                $attachments[] = [
+                    'path' => $lettreMotivation->getPathname(),
+                    'name' => $lettreMotivation->getClientOriginalName(),
+                ];
+            }
+
+            /**
+             * Envoi du mail
+             */
+            $emailService->send(
+                from: $this->getUser()->getEmail(),
+                to: $email,
+                subject: 'Candidature spontanée',
+                template: 'email',
+                context: [
+                    'message' => $message,
+                    'company' => $company,
+                    'contact' => $contact,
+                    'user' => $this->getUser(),
+                ],
+                attachments: $attachments
+            );
+
+            $this->addFlash(
+                'success',
+                'Votre candidature a bien été envoyée.'
+            );
+
+            return $this->redirectToRoute(
+                'app_spontaneous_application',
+                ['siret' => $siret]
+            );
         }
+
         return $this->render(
             'spontaneous_application/application.html.twig',
             [
@@ -109,6 +172,5 @@ final class SpontaneousApplicationController extends AbstractController
             ]
         );
     }
-
 
 }
