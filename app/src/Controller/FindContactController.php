@@ -47,20 +47,30 @@ final class FindContactController extends AbstractController
             ]);
         }
 
-        $emails = $this->websiteContactFinderService->findContacts($website) ?? [];
+        /*
+         * On vérifie d'abord si des contacts existent déjà
+         * pour cette entreprise.
+         */
+        $existingContacts = $company->getCompanyContacts();
 
-        foreach ($emails as $email) {
+        if ($existingContacts->count() > 0) {
 
-            $exists = false;
+            // Des contacts existent déjà :
+            // on ne relance pas la recherche.
+            $emails = [];
 
-            foreach ($company->getCompanyContacts() as $contact) {
-                if ($contact->getEmail() === $email) {
-                    $exists = true;
-                    break;
-                }
+            foreach ($existingContacts as $contact) {
+                $emails[] = $contact->getEmail();
             }
 
-            if (!$exists) {
+        } else {
+
+            // Aucun contact existant :
+            // on lance la recherche.
+            $emails = $this->websiteContactFinderService->findContacts($website) ?? [];
+
+            foreach ($emails as $email) {
+
                 $contact = new CompanyContacts();
 
                 $contact->setEmail($email);
@@ -68,9 +78,9 @@ final class FindContactController extends AbstractController
 
                 $this->entityManager->persist($contact);
             }
-        }
 
-        $this->entityManager->flush();
+            $this->entityManager->flush();
+        }
 
         return $this->render('find_contact/index.html.twig', [
             'company' => $company,
@@ -79,7 +89,7 @@ final class FindContactController extends AbstractController
         ]);
     }
 
-
+    
     #[Route('/edit/contact/{siret}', name: 'app_edit_contact')]
     public function edit(
         string $siret,

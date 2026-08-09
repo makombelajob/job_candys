@@ -49,7 +49,7 @@ class RegistrationController extends AbstractController
                 if ($accountType === 'freelance') {
                     $user->setRoles(['ROLE_FREELANCE']);
                 } else {
-                    $user->setRoles([]);
+                    $user->setRoles(['ROLE_USER']);
                 }
 
                 $entityManager->persist($user);

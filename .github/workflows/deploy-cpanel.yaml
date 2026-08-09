@@ -1,35 +1,17 @@
-name: Deploy Job Candys
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check deployment files
-        run: |
-          echo "Checking Symfony templates..."
-
-          test -f app/templates/bundles/TwigBundle/Exception/error.html.twig
-
-          echo "Template found:"
-          ls -la app/templates/bundles/TwigBundle/Exception/
-
-      - name: Deploy via rsync
-        uses: burnett01/rsync-deployments@v8
-        with:
-          switches: -azv --no-group --no-owner --omit-dir-times
-          path: ./app/
-          remote_path: /var/www/online-webs/job-candys.jobmakombela.fr/app/
-          remote_host: ${{ secrets.FTP_HOST }}
-          remote_user: ${{ secrets.FTP_USER }}
-          remote_key: ${{ secrets.DEPLOY_SSH_KEY }}
-          remote_port: 22
-
+  - name: Deploy to Staging server
+    uses: easingthemes/ssh-deploy@main
+    with:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      ARGS: "-rlgoDzvc -i"
+      SOURCE: "dist/"
+      REMOTE_HOST: ${{ secrets.FTP_HOST }}
+      REMOTE_USER: ${{ secrets.FTP_USER }}
+      TARGET: ${{ secrets.FTP_TARGET }}
+      EXCLUDE: "/dist/, /node_modules/"
+      SCRIPT_BEFORE: |
+        whoami
+        ls -al
+      SCRIPT_AFTER: |
+        whoami
+        ls -al
+        echo $RSYNC_STDOUT

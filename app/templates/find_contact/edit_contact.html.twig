@@ -5,75 +5,68 @@
 
 {% block body %}
 
-	<div class="container py-4">
+	{% block stylesheets %}
+		{{ parent() }}
+		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
+	{% endblock %}
 
-		<div class="row justify-content-center">
-			<div class="col-lg-8">
-
-				<div class="card shadow-sm">
-
-					{% for message in app.flashes('success') %}
-						<div class="alert alert-success alert-dismissible fade show" role="alert">
-							{{ message }}
-							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-						</div>
-					{% endfor %}
-
-					<div class="card-header">
-						<h1 class="h4 mb-0">Modifier l'entreprise</h1>
-					</div>
-
-					<div class="card-body">
-
-						{{ form_start(form) }}
-
-						<div class="mb-3">
-							{{ form_row(form.fullName) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.siret) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.webSite) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.carrePage) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.linkedin) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.Phone) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.address) }}
-						</div>
-
-						<div class="mb-3">
-							{{ form_row(form.email) }}
-						</div>
-
-						<div class="text-center mt-4">
-							<button type="submit" class="btn btn-primary">
-								Enregistrer
-							</button>
-						</div>
-
-						{{ form_end(form) }}
-
-					</div>
-
+	<div class="full-screen">
+		<div class="card m-0 pt-1 pb-3">
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
 				</div>
+			{% endfor %}
+
+			<div class="card-header card-info">
+				<h1 class="h4 mb-0">Modifier l'entreprise</h1>
+			</div>
+
+			<div class="info">
+				{{ form_start(form) }}
+
+				<div class="mb-3">
+					{{ form_row(form.fullName) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.siret) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.webSite) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.carrePage) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.linkedin) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.Phone) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.address) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_row(form.email) }}
+				</div>
+
+				<div class="text-center mt-4 mb-0">
+					<button type="submit" class="btn btn-primary">
+						Enregistrer
+					</button>
+				</div>
+
+				{{ form_end(form) }}
 
 			</div>
 		</div>
-
 	</div>
-
 {% endblock %}

@@ -2,15 +2,15 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Profils;
 use App\Form\ProfileEditorType;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-
-
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 final class ProfilesController extends AbstractController
 {
@@ -18,6 +18,7 @@ final class ProfilesController extends AbstractController
     public function index(): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
         /**
          * All rest of code here and hope get it and again
          */
@@ -26,33 +27,30 @@ final class ProfilesController extends AbstractController
         ]);
     }
 
-    #[Route('/profiles/modify', name: 'app_profiles_modify')]
+    #[Route('/profiles/modify', name: 'app_profiles_modify', methods: ['GET', 'POST'])]
     public function modifyProfiles(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        FileUploader $fileUploader
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        // Utilisateur actuellement connecté
         $user = $this->getUser();
 
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
 
-        // Profil associé à l'utilisateur
         $profil = $user->getProfils();
+        $isNew = $profil === null;
 
-        // Si aucun profil n'existe encore
-        if (!$profil) {
+        if ($isNew) {
             $profil = new Profils();
             $user->setProfils($profil);
         }
 
-        // Création du formulaire basé sur Profils
         $form = $this->createForm(ProfileEditorType::class, $profil);
 
-        // Préremplissage des champs venant de Users
         $form->get('firstName')->setData($user->getFirstName());
         $form->get('lastName')->setData($user->getLastName());
         $form->get('email')->setData($user->getEmail());
@@ -60,22 +58,39 @@ final class ProfilesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile|null $cv */
+            $cv = $form->get('defaultCv')->getData();
 
-            // Récupération des données Users
-            $user->setFirstName($form->get('firstName')->getData());
-            $user->setLastName($form->get('lastName')->getData());
-            $user->setEmail($form->get('email')->getData());
+            /** @var UploadedFile|null $letter */
+            $letter = $form->get('defaultLetter')->getData();
 
-            // Mise à jour de la date
-            $user->setUpdatedAt(new \DateTimeImmutable());
-            $profil->setUpdatedAt(new \DateTimeImmutable());
+            if ($isNew && (!$cv || !$letter)) {
+                $this->addFlash('error', 'Le CV et la lettre de motivation sont obligatoires.');
+            } else {
+                if ($cv) {
+                    $profil->setDefaultCv($fileUploader->upload($cv));
+                }
 
-            $entityManager->persist($user);
-            $entityManager->persist($profil);
+                if ($letter) {
+                    $profil->setDefaultLetter($fileUploader->upload($letter));
+                }
 
-            $entityManager->flush();
+                $user->setFirstName($form->get('firstName')->getData());
+                $user->setLastName($form->get('lastName')->getData());
+                $user->setEmail($form->get('email')->getData());
 
-            return $this->redirectToRoute('app_profiles_modify');
+                $now = new \DateTimeImmutable();
+                $user->setUpdatedAt($now);
+                $profil->setUpdatedAt($now);
+
+                $entityManager->persist($user);
+                $entityManager->persist($profil);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Profil enregistré.');
+
+                return $this->redirectToRoute('app_profiles');
+            }
         }
 
         return $this->render('profiles/modify.html.twig', [

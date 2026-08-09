@@ -12,43 +12,58 @@
 	<div class="full-screen">
 		<div class="card pb-2">
 			<h1>Modification de votre profil</h1>
+
+			{% for message in app.flashes('error') %}
+				<div class="alert alert-danger">
+					{{ message }}
+				</div>
+			{% endfor %}
 			<div class="info">
 				{{ form_start(form) }}
 				<div>
 					<strong>{{ form_label(form.firstName) }}</strong>
 					{{ form_widget(form.firstName) }}
+					{{ form_errors(form.firstName) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.lastName) }}</strong>
 					{{ form_widget(form.lastName) }}
+					{{ form_errors(form.lastName) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.email) }}</strong>
 					{{ form_widget(form.email) }}
+					{{ form_errors(form.email) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.phone) }}</strong>
 					{{ form_widget(form.phone) }}
+					{{ form_errors(form.phone) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.city) }}</strong>
 					{{ form_widget(form.city) }}
+					{{ form_errors(form.city) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.defaultCv) }}</strong>
 					{{ form_widget(form.defaultCv) }}
+					{{ form_errors(form.defaultCv) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.defaultLetter) }}</strong>
 					{{ form_widget(form.defaultLetter) }}
+					{{ form_errors(form.defaultLetter) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.linkedin) }}</strong>
 					{{ form_widget(form.linkedin) }}
+					{{ form_errors(form.linkedin) }}
 				</div>
 				<div>
 					<strong>{{ form_label(form.website) }}</strong>
 					{{ form_widget(form.website) }}
+					{{ form_errors(form.website) }}
 				</div>
 				<div class="text-center p-0 m-0 mt-2">
 					<button type="submit" class="btn btn-primary">
@@ -58,6 +73,7 @@
 				{{ form_end(form) }}
 			</div>
 		</div>
+
 	</div>
 
 {% endblock %}
