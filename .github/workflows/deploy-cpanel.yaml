@@ -1,4 +1,4 @@
-name: Test Deploy
+name: Test SSH Deploy
 
 on:
   workflow_dispatch:
@@ -11,42 +11,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check dist
-        run: |
-          echo "=== Workspace ==="
-          pwd
-          echo "=== dist ==="
-          ls -la dist/
-
-      - name: Deploy to Staging
+      - name: SSH Deploy Test
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-
           REMOTE_HOST: ${{ secrets.FTP_HOST }}
           REMOTE_USER: ${{ secrets.FTP_USER }}
           REMOTE_PORT: 22
-
           SOURCE: "dist/"
           TARGET: ${{ secrets.FTP_TARGET }}
-
           ARGS: "-rlgoDzvc -i"
-
-          EXCLUDE: "/node_modules/"
-
           SCRIPT_BEFORE: |
-            echo "===== BEFORE ====="
+            echo "=== SSH OK ==="
             whoami
             hostname
-            echo "Target:"
-            ls -la "${{ secrets.FTP_TARGET }}"
-
-          SCRIPT_AFTER: |
-            echo "===== AFTER ====="
-            whoami
-            hostname
-            echo "Target:"
-            ls -la "${{ secrets.FTP_TARGET }}"
-            echo "RSYNC:"
-            echo "$RSYNC_STDOUT"
-
+            pwd
+            ls -la
+            ls -la /var/www/online-webs/job-candys.jobmakombela.fr/
