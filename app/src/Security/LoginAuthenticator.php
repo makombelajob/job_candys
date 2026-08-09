@@ -22,52 +22,85 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     public function authenticate(Request $request): Passport
     {
         $email = $request->getPayload()->getString('email');
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+        $request->getSession()->set(
+            SecurityRequestAttributes::LAST_USERNAME,
+            $email
+        );
 
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new PasswordCredentials(
+                $request->getPayload()->getString('password')
+            ),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge(
+                    'authenticate',
+                    $request->getPayload()->getString('_csrf_token')
+                ),
                 new RememberMeBadge(),
             ]
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
-        }
-
-        // For example:
-        // return new RedirectResponse($this->urlGenerator->generate('some_route'));
+    public function onAuthenticationSuccess(
+        Request $request,
+        TokenInterface $token,
+        string $firewallName
+    ): ?Response {
         $user = $token->getUser();
 
+        /**
+         * ADMIN
+         */
         if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-        return new RedirectResponse(
-            $this->urlGenerator->generate('app_admin')
+            return new RedirectResponse(
+                $this->urlGenerator->generate('app_admin')
             );
         }
 
+        /**
+         * USERS
+         */
         if (in_array('ROLE_USER', $user->getRoles(), true)) {
-        return new RedirectResponse(
-            $this->urlGenerator->generate('app_profiles')
+
+            // Première connexion :
+            // aucun profil n'est encore associé à l'utilisateur.
+            if ($user->getProfils() === null) {
+                return new RedirectResponse(
+                    $this->urlGenerator->generate('app_profiles_modify')
+                );
+            }
+
+            // Profil déjà créé :
+            // on peut éventuellement respecter la TargetPath.
+            if ($targetPath = $this->getTargetPath(
+                $request->getSession(),
+                $firewallName
+            )) {
+                return new RedirectResponse($targetPath);
+            }
+
+            // Connexions suivantes
+            return new RedirectResponse(
+                $this->urlGenerator->generate('app_profiles')
             );
         }
 
+        /**
+         * DEFAULT
+         */
         return new RedirectResponse(
             $this->urlGenerator->generate('app_main')
         );
-
     }
 
     protected function getLoginUrl(Request $request): string
@@ -75,3 +108,4 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 }
+

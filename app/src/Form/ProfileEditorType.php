@@ -224,32 +224,6 @@ class ProfileEditorType extends AbstractType
                         message: 'Veuillez saisir une URL valide.'
                     ),
                 ],
-            ])
-
-            // =========================
-            // PHOTO DE PROFIL
-            // =========================
-
-            ->add('photoProfil', FileType::class, [
-                'label' => 'Photo de profil',
-                'required' => false,
-                'mapped' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'accept' => 'image/jpeg,image/png,image/webp',
-                ],
-                'constraints' => [
-                    new File(
-                        maxSize: '5M',
-                        mimeTypes: [
-                            'image/jpeg',
-                            'image/png',
-                            'image/webp',
-                        ],
-                        mimeTypesMessage: 'Veuillez sélectionner une image JPG, PNG ou WebP.',
-                        maxSizeMessage: 'La photo ne peut pas dépasser {{ limit }}.'
-                    ),
-                ],
             ]);
     }
 
