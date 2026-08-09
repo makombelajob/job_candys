@@ -6,20 +6,59 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Staging server
-        uses: easingthemes/ssh-deploy@main
+      # À garder si ton projet doit construire dist/
+      # - name: Install dependencies
+      #   run: npm ci
+      #
+      # - name: Build
+      #   run: npm run build
+
+      - name: Verify dist
+        run: |
+          echo "=== Local workspace ==="
+          pwd
+          echo "=== dist/ ==="
+          ls -la dist/
+
+      - name: Deploy to Staging server - TEST
+        uses: easingthemes/ssh-deploy@v6.0.1
         with:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          ARGS: "-rlgoDzvc -i"
-          SOURCE: "dist/"
           REMOTE_HOST: ${{ secrets.FTP_HOST }}
           REMOTE_USER: ${{ secrets.FTP_USER }}
+          REMOTE_PORT: 22
+
+          SOURCE: "dist/"
           TARGET: ${{ secrets.FTP_TARGET }}
-          EXCLUDE: "/dist/, /node_modules/"
+
+          # Test : pas de --delete
+          ARGS: "-rlgoDzvc -i"
+
+          # Pas besoin d'exclure dist/ puisque SOURCE est déjà dist/
+          EXCLUDE: "/node_modules/"
+
           SCRIPT_BEFORE: |
+            echo "=== Remote user ==="
             whoami
-            ls -al
+
+            echo "=== Remote host ==="
+            hostname
+
+            echo "=== Target ==="
+            echo "$TARGET"
+
+            echo "=== Current directory ==="
+            pwd
+
+            echo "=== Target directory ==="
+            ls -la "${{ secrets.FTP_TARGET }}"
+
           SCRIPT_AFTER: |
+            echo "=== Deployment finished ==="
             whoami
-            ls -al
+
+            echo "=== Target after deployment ==="
+            ls -la "${{ secrets.FTP_TARGET }}"
+
+            echo "=== RSYNC output ==="
             echo "$RSYNC_STDOUT"
