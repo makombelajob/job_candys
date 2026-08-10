@@ -20,11 +20,6 @@ class ProfileEditorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
-            // =========================
-            // INFORMATIONS UTILISATEUR
-            // =========================
-
             ->add('firstName', null, [
                 'label' => 'Prénom',
                 'mapped' => false,
@@ -46,7 +41,6 @@ class ProfileEditorType extends AbstractType
                     ),
                 ],
             ])
-
             ->add('lastName', null, [
                 'label' => 'Nom',
                 'mapped' => false,
@@ -68,7 +62,6 @@ class ProfileEditorType extends AbstractType
                     ),
                 ],
             ])
-
             ->add('email', EmailType::class, [
                 'label' => 'Adresse email',
                 'mapped' => false,
@@ -91,11 +84,6 @@ class ProfileEditorType extends AbstractType
                     ),
                 ],
             ])
-
-            // =========================
-            // PROFIL
-            // =========================
-
             ->add('phone', TelType::class, [
                 'label' => 'Téléphone',
                 'required' => false,
@@ -111,7 +99,6 @@ class ProfileEditorType extends AbstractType
                     ),
                 ],
             ])
-
             ->add('city', null, [
                 'label' => 'Ville',
                 'required' => false,
@@ -126,64 +113,55 @@ class ProfileEditorType extends AbstractType
                         maxMessage: 'La ville ne peut pas dépasser {{ limit }} caractères.'
                     ),
                 ],
-            ])
+            ]);
 
-            // =========================
-            // CV
-            // =========================
+        if (!$options['is_freelance']) {
+            $builder
+                ->add('defaultCv', FileType::class, [
+                    'label' => 'CV par défaut',
+                    'required' => false,
+                    'mapped' => false,
+                    'attr' => [
+                        'class' => 'form-control',
+                        'accept' => '.pdf,.doc,.docx',
+                    ],
+                    'constraints' => [
+                        new File(
+                            maxSize: '5M',
+                            mimeTypes: [
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            ],
+                            mimeTypesMessage: 'Veuillez sélectionner un fichier PDF, DOC ou DOCX.',
+                            maxSizeMessage: 'Le fichier ne peut pas dépasser {{ limit }}.'
+                        ),
+                    ],
+                ])
+                ->add('defaultLetter', FileType::class, [
+                    'label' => 'Lettre de motivation par défaut',
+                    'required' => false,
+                    'mapped' => false,
+                    'attr' => [
+                        'class' => 'form-control',
+                        'accept' => '.pdf,.doc,.docx',
+                    ],
+                    'constraints' => [
+                        new File(
+                            maxSize: '5M',
+                            mimeTypes: [
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            ],
+                            mimeTypesMessage: 'Veuillez sélectionner un fichier PDF, DOC ou DOCX.',
+                            maxSizeMessage : 'Le fichier ne peut pas dépasser {{ limit }}.'
+                        ),
+                    ],
+                ]);
+        }
 
-            ->add('defaultCv', FileType::class, [
-                'label' => 'CV par défaut',
-                'required' => false,
-                'mapped' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'accept' => '.pdf,.doc,.docx',
-                ],
-                'constraints' => [
-                    new File(
-                        maxSize: '5M',
-                        mimeTypes: [
-                            'application/pdf',
-                            'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        ],
-                        mimeTypesMessage: 'Veuillez sélectionner un fichier PDF, DOC ou DOCX.',
-                        maxSizeMessage: 'Le fichier ne peut pas dépasser {{ limit }}.'
-                    ),
-                ],
-            ])
-
-            // =========================
-            // LETTRE DE MOTIVATION
-            // =========================
-
-            ->add('defaultLetter', FileType::class, [
-                'label' => 'Lettre de motivation par défaut',
-                'required' => false,
-                'mapped' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'accept' => '.pdf,.doc,.docx',
-                ],
-                'constraints' => [
-                    new File(
-                        maxSize: '5M',
-                        mimeTypes: [
-                            'application/pdf',
-                            'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        ],
-                        mimeTypesMessage: 'Veuillez sélectionner un fichier PDF, DOC ou DOCX.',
-                        maxSizeMessage: 'Le fichier ne peut pas dépasser {{ limit }}.'
-                    ),
-                ],
-            ])
-
-            // =========================
-            // LINKEDIN
-            // =========================
-
+        $builder
             ->add('linkedin', null, [
                 'label' => 'LinkedIn',
                 'required' => false,
@@ -202,11 +180,6 @@ class ProfileEditorType extends AbstractType
                     ),
                 ],
             ])
-
-            // =========================
-            // SITE WEB
-            // =========================
-
             ->add('website', null, [
                 'label' => 'Site web',
                 'required' => false,
@@ -231,6 +204,9 @@ class ProfileEditorType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Profils::class,
+            'is_freelance' => false,
         ]);
+
+        $resolver->setAllowedTypes('is_freelance', 'bool');
     }
 }

@@ -104,8 +104,7 @@ class WebsiteFinderService
         foreach ($metas as $meta) {
 
             if (
-                strtolower($meta->getAttribute('name')) 
-                === 'description'
+                strtolower($meta->getAttribute('name')) === 'description'
             ) {
 
                 $description = $meta->getAttribute('content');

@@ -35,3 +35,4 @@ services:
     container_name: job_candys_mail
     ports:
       - "8025:8025"
+      - "1025:1025"

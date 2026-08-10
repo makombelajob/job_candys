@@ -19,6 +19,7 @@
 				</div>
 			{% endfor %}
 			<div class="info">
+
 				{{ form_start(form) }}
 				<div>
 					<strong>{{ form_label(form.firstName) }}</strong>
@@ -45,16 +46,19 @@
 					{{ form_widget(form.city) }}
 					{{ form_errors(form.city) }}
 				</div>
-				<div>
-					<strong>{{ form_label(form.defaultCv) }}</strong>
-					{{ form_widget(form.defaultCv) }}
-					{{ form_errors(form.defaultCv) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.defaultLetter) }}</strong>
-					{{ form_widget(form.defaultLetter) }}
-					{{ form_errors(form.defaultLetter) }}
-				</div>
+				{% if not is_granted('ROLE_FREELANCE') %}
+					<div>
+						<strong>{{ form_label(form.defaultCv) }}</strong>
+						{{ form_widget(form.defaultCv) }}
+						{{ form_errors(form.defaultCv) }}
+					</div>
+					<div>
+						<strong>{{ form_label(form.defaultLetter) }}</strong>
+						{{ form_widget(form.defaultLetter) }}
+						{{ form_errors(form.defaultLetter) }}
+					</div>
+				{% endif %}
+
 				<div>
 					<strong>{{ form_label(form.linkedin) }}</strong>
 					{{ form_widget(form.linkedin) }}

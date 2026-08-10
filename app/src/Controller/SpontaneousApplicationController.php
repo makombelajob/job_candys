@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Form\SearchCompanyType;
 use App\Repository\CompaniesRepository;
+use App\Repository\ApplicationsRepository;
 use App\Entity\Applications;
+use App\Service\FileUploader;
 use App\Form\ApplicationType;
 use App\Service\InseeApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\EmailService;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class SpontaneousApplicationController extends AbstractController
 {
@@ -20,7 +23,6 @@ final class SpontaneousApplicationController extends AbstractController
         Request $request,
         InseeApiService $inseeApiService
     ): Response {
-
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $form = $this->createForm(SearchCompanyType::class);
@@ -30,11 +32,9 @@ final class SpontaneousApplicationController extends AbstractController
         $resultats = null;
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $motRecherche = $form->get('mot')->getData();
 
             if (!empty($motRecherche)) {
-
                 $resultats = $inseeApiService->searchEntreprise(
                     $motRecherche
                 );
@@ -57,21 +57,25 @@ final class SpontaneousApplicationController extends AbstractController
         InseeApiService $inseeApiService,
         CompaniesRepository $companiesRepository,
         EmailService $emailService,
+        FileUploader $fileUploader,
+        EntityManagerInterface $entityManager,
     ): Response {
-
         $this->denyAccessUnlessGranted('ROLE_USER');
+
         /**
-         * Retreive company
+         * Retrieve company
          */
-        $company = $companiesRepository->findOneBy([ 'siret' => $siret, ]);
+        $company = $companiesRepository->findOneBy(['siret' => $siret]);
+
         if (!$company) {
-            throw $this->createNotFoundException( 'Entreprise introuvable.' );
+            throw $this->createNotFoundException('Entreprise introuvable.');
         }
+
         $contacts = $company->getCompanyContacts();
 
         $emails = [];
 
-        foreach($contacts as $contact) {
+        foreach ($contacts as $contact) {
             if ($contact->getEmail()) {
                 $emails[] = $contact->getEmail();
             }
@@ -81,6 +85,7 @@ final class SpontaneousApplicationController extends AbstractController
 
         $application = new Applications();
         $profil = $this->getUser()->getProfils();
+
         $form = $this->createForm(ApplicationType::class, $application, [
             'contacts' => $contacts,
             'profilCv' => $profil?->getDefaultCv(),
@@ -112,28 +117,72 @@ final class SpontaneousApplicationController extends AbstractController
             }
 
             $message = $form->get('message')->getData();
-            $cv = $form->get('cv')->getData();
-            $lettreMotivation = $form->get('lettreMotivation')->getData();
+
+            // Fichiers sélectionnés depuis le profil
+            $defaultCv = $form->get('defaultCv')->getData();
+            $defaultLetter = $form->get('defaultLetter')->getData();
+
+            // Nouveaux fichiers uploadés
+            $uploadedCv = $form->get('cv')->getData();
+            $uploadedLetter = $form->get('lettreMotivation')->getData();
 
             $attachments = [];
 
             /**
              * CV
              */
-            if ($cv) {
+            if ($uploadedCv) {
+                $cvFilename = $fileUploader->upload($uploadedCv);
+
                 $attachments[] = [
-                    'path' => $cv->getPathname(),
-                    'name' => $cv->getClientOriginalName(),
+                    'path' => $fileUploader->getPath($cvFilename),
+                    'name' => $uploadedCv->getClientOriginalName(),
+                ];
+            } elseif ($defaultCv) {
+                if (!$fileUploader->exists($defaultCv)) {
+                    $this->addFlash(
+                        'error',
+                        'Le CV sélectionné dans votre profil est introuvable.'
+                    );
+
+                    return $this->redirectToRoute(
+                        'app_spontaneous_application',
+                        ['siret' => $siret]
+                    );
+                }
+
+                $attachments[] = [
+                    'path' => $fileUploader->getPath($defaultCv),
+                    'name' => $defaultCv,
                 ];
             }
 
             /**
              * Lettre de motivation
              */
-            if ($lettreMotivation) {
+            if ($uploadedLetter) {
+                $letterFilename = $fileUploader->upload($uploadedLetter);
+
                 $attachments[] = [
-                    'path' => $lettreMotivation->getPathname(),
-                    'name' => $lettreMotivation->getClientOriginalName(),
+                    'path' => $fileUploader->getPath($letterFilename),
+                    'name' => $uploadedLetter->getClientOriginalName(),
+                ];
+            } elseif ($defaultLetter) {
+                if (!$fileUploader->exists($defaultLetter)) {
+                    $this->addFlash(
+                        'error',
+                        'La lettre sélectionnée dans votre profil est introuvable.'
+                    );
+
+                    return $this->redirectToRoute(
+                        'app_spontaneous_application',
+                        ['siret' => $siret]
+                    );
+                }
+
+                $attachments[] = [
+                    'path' => $fileUploader->getPath($defaultLetter),
+                    'name' => $defaultLetter,
                 ];
             }
 
@@ -154,6 +203,29 @@ final class SpontaneousApplicationController extends AbstractController
                 attachments: $attachments
             );
 
+            /**
+             * Stockage de la candidature
+             */
+            $application
+                ->setProfils($profil)
+                ->setCompanies($company)
+                ->setStatus(true);
+
+            if ($uploadedCv) {
+                $application->setCvUsed($cvFilename);
+            } else {
+                $application->setCvUsed($defaultCv);
+            }
+
+            if ($uploadedLetter) {
+                $application->setLetterUsed($letterFilename);
+            } else {
+                $application->setLetterUsed($defaultLetter);
+            }
+
+            $entityManager->persist($application);
+            $entityManager->flush();
+
             $this->addFlash(
                 'success',
                 'Votre candidature a bien été envoyée.'
@@ -173,4 +245,25 @@ final class SpontaneousApplicationController extends AbstractController
         );
     }
 
+    #[Route('/mes-candidatures', name: 'app_spontaneous_application_send_list')]
+    public function applicationSend(ApplicationsRepository $applicationsRepository): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $user = $this->getUser();
+        $profil = $user->getProfils();
+
+        $applications = []; 
+        
+        if ($profil) { 
+            $applications = $applicationsRepository->findBy(
+                ['profils' => $profil], 
+                ['sentAt' => 'DESC'] ); 
+        }
+
+        return $this->render('spontaneous_application/application_send_list.html.twig',[
+            'applications' => $applications,
+        ]);
+    }
 }
+

@@ -60,15 +60,16 @@ final class FileUploader
         $finalPath = $this->uploadDirectory . '/' . $finalName;
 
         try {
-            $this->filesystem->rename( $temporaryPath, $finalPath);
-
+            $this->filesystem->rename($temporaryPath, $finalPath);
         } catch (\Throwable $e) {
             if ($this->filesystem->exists($temporaryPath)) {
                 $this->filesystem->remove($temporaryPath);
             }
 
             throw new FileException(
-                'Impossible de déplacer le fichier définitivement.', 0, $e
+                'Impossible de déplacer le fichier définitivement.',
+                0,
+                $e
             );
         }
 
@@ -79,6 +80,11 @@ final class FileUploader
         }
 
         return $finalName;
+    }
+
+    public function getPath(string $filename): string
+    {
+        return $this->uploadDirectory . '/' . basename($filename);
     }
 
     public function remove(string $filename): void

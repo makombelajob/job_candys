@@ -6,23 +6,10 @@
 	</head>
 
 	<body>
-
-		<p>Bonjour,</p>
-
-		<p>
-			Je me permets de vous contacter afin de vous soumettre ma candidature spontanée.
-		</p>
-
 		<p>
 			{{ message|nl2br }}
 		</p>
-
 		<p>
-			Vous trouverez mon CV et ma lettre de motivation en pièces jointes.
-		</p>
-
-		<p>
-			Cordialement,<br>
 			{{ user.firstname ?? '' }}
 			{{ user.lastname ?? '' }}
 		</p>

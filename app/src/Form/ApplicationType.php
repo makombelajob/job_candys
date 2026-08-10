@@ -56,7 +56,7 @@ class ApplicationType extends AbstractType
                     : [],
                 'placeholder' => 'Choisir un CV existant',
                 'mapped' => false,
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'class' => 'form-select',
                 ] ,
@@ -96,7 +96,7 @@ class ApplicationType extends AbstractType
                     : [],
                 'placeholder' => 'Choisir une lettre existante',
                 'mapped' => false,
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'class' => 'form-select',
                 ] ,
@@ -136,7 +136,10 @@ class ApplicationType extends AbstractType
                     'rows' => 5,
                 ],
                 'data' => "Bonjour, 
-Je me permets de vous contacter afin de vous proposer ma candidature spontanée au sein de votre entreprise. Vous trouverez mon CV ainsi que ma lettre de motivation en pièces jointes. Je reste à votre disposition pour échanger avec vous et vous présenter plus en détail mon parcours. Cordialement
+Je me permets de vous contacter afin de vous proposer ma candidature spontanée au sein de votre entreprise. 
+Vous trouverez mon CV ainsi que ma lettre de motivation en pièces jointes. 
+Je reste à votre disposition pour échanger avec vous et vous présenter plus en détail mon parcours. 
+Cordialement
                 ",
             ]);
     }

@@ -28,11 +28,14 @@ class WebsiteContactFinderService
         '/contact/',
         '/contact-us',
         '/contactez-nous',
+        '/en/contact-us',
         '/nous-contacter',
         '/localisation',
         '/localisation.php',
+        '/localisation.php?lang=fr',
         '/mentions-legales',
         '/mentions-legales.php',
+        
     ];
 
     private const EXCLUDED_KEYWORDS = [

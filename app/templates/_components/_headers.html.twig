@@ -26,8 +26,8 @@
 		{% elseif is_granted('ROLE_FREELANCE') %}
 
 			<a href="{{ path('app_profiles') }}">Accueil</a>
-			<a href="#">Portfolio</a>
-			<a href="#">Website</a>
+			<a href="{{ path('app_profiles_modify') }}">Profil</a>
+			<a href="#">Sitewebs</a>
 			<a href="#">Cyber</a>
 			<a href="#">Clients</a>
 			<a href="{{ logout_path() }}">Déconnexion</a>
@@ -36,7 +36,7 @@
 
 			<a href="{{ path('app_profiles') }}">Accueil</a>
 			<a href="{{ path('app_profiles_modify') }}">Profil</a>
-			<a href="#">Mes candidatures</a>
+			<a href="{{ path('app_spontaneous_application_send_list') }}">Mes candidatures</a>
 			<a href="#">Mes favoris</a>
 			<a href="#">Messages</a>
 			<a href="{{ logout_path() }}">Déconnexion</a>
