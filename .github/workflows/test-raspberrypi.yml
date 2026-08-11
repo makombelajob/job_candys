@@ -1,0 +1,18 @@
+name: Test Raspberry Pi
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: [self-hosted, Linux, ARM64]
+
+    steps:
+      - name: Test Raspberry Pi
+        run: |
+          echo "=== TEST RASPBERRY PI ==="
+          echo "Utilisateur : $(whoami)"
+          echo "Machine : $(hostname)"
+          echo "Répertoire : $(pwd)"
+          echo "Architecture : $(uname -m)"
+          echo "=== FIN DU TEST ==="
