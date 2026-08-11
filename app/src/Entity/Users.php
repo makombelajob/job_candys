@@ -66,6 +66,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Companies::class, inversedBy: 'users')]
     private Collection $companies;
 
+    #[ORM\Column(length: 255)]
+    private ?string $senderEmail = null;
+
     public function __construct()
     {
         $this->companies = new ArrayCollection();
@@ -264,6 +267,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCompany(Companies $company): static
     {
         $this->companies->removeElement($company);
+
+        return $this;
+    }
+
+    public function getSenderEmail(): ?string
+    {
+        return $this->senderEmail;
+    }
+
+    public function setSenderEmail(string $senderEmail): static
+    {
+        $this->senderEmail = $senderEmail;
 
         return $this;
     }

@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\HunterEmailVerify;
 use Symfony\Component\Form\FormError;
+use App\Service\UserCreatorService;
 
 class RegistrationController extends AbstractController
 {
@@ -20,7 +21,8 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        HunterEmailVerify $hunterEmailVerify
+        HunterEmailVerify $hunterEmailVerify,
+        UserCreatorService $userCreator,
         ): Response
     {
         $user = new Users();
@@ -52,8 +54,7 @@ class RegistrationController extends AbstractController
                     $user->setRoles(['ROLE_USER']);
                 }
 
-                $entityManager->persist($user);
-                $entityManager->flush();
+                $userCreator->create($user);
 
                 return $this->redirectToRoute('app_profiles');
             }
