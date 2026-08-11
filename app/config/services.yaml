@@ -9,7 +9,7 @@
 parameters:
     hunter.api_key: '%env(HUNTER_API_KEY)%'
     app.upload_directory: '%kernel.project_dir%/public/uploads/profiles'
-    app.upload_temp_directory: '%kernel.project_dir%/var/uploads/temp'
+    app.upload_temp_directory: '%kernel.project_dir%/public/uploads/temp'
 
 services:
     # default configuration for services in *this* file
