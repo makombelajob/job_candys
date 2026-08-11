@@ -10,6 +10,7 @@ class WebsiteFinderService
         '.com',
         '.eu',
         '.bzh',
+        '.ma',
     ];
 
     /**
