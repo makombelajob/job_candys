@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Users;
 use App\Form\SearchCompanyType;
 use App\Repository\CompaniesRepository;
 use App\Repository\ApplicationsRepository;
@@ -188,9 +189,18 @@ final class SpontaneousApplicationController extends AbstractController
 
             /**
              * Envoi du mail
+             * Le EmailService utilise :
+             * From:
+             *  $user->getSenderEmail();
+             * Reply to :
+             *  $user->getEmail();
+             * 
+             * @var Users $User
              */
+            $user = $this->getUser();
+
             $emailService->send(
-                from: $this->getUser()->getEmail(),
+                user: $user,
                 to: $email,
                 subject: 'Candidature spontanée',
                 template: 'email',
@@ -198,7 +208,7 @@ final class SpontaneousApplicationController extends AbstractController
                     'message' => $message,
                     'company' => $company,
                     'contact' => $contact,
-                    'user' => $this->getUser(),
+                    'user' => $user,
                 ],
                 attachments: $attachments
             );
