@@ -42,21 +42,27 @@
 				</p>
 			</div>
 
-			{% if is_granted('ROLE_FREELANCE') %}
-				<div class="actions">
-					<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
-						Trouver contact
-					</a>
+			{% if resultat starts with 'http' %}
 
-					<a href="#" id="check-web" class="btn primary" data-loading="Vérification...">
-						Check web
-					</a>
-				</div>
+				{% if is_granted('ROLE_FREELANCE') %}
+					<div class="actions">
+						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
+							Trouver contact
+						</a>
 
-			{% else %}
-				<div class="actions">
-					<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">Trouver contact</a>
-				</div>
+						<a href="#" id="check-web" class="btn primary" data-loading="Vérification...">
+							Check web
+						</a>
+					</div>
+
+				{% else %}
+					<div class="actions">
+						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
+							Trouver contact
+						</a>
+					</div>
+
+				{% endif %}
 
 			{% endif %}
 
@@ -65,4 +71,5 @@
 	</div>
 
 	<script src="{{ asset('js/find_web.js') }}"></script>
+
 {% endblock %}

@@ -8,6 +8,7 @@ use App\Repository\CompaniesRepository;
 use App\Repository\ApplicationsRepository;
 use App\Entity\Applications;
 use App\Service\FileUploader;
+use App\Service\ImapService;
 use App\Form\ApplicationType;
 use App\Service\InseeApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,9 +17,18 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\EmailService;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 
 final class SpontaneousApplicationController extends AbstractController
 {
+    private ParameterBagInterface $params;
+
+    public function __construct(ParameterBagInterface $params)
+    {
+        $this->params = $params;
+    }
+
     #[Route('/spontaneous/application', name: 'app_spontaneous_application')]
     public function index(
         Request $request,
@@ -194,7 +204,7 @@ final class SpontaneousApplicationController extends AbstractController
              *  $user->getSenderEmail();
              * Reply to :
              *  $user->getEmail();
-             * 
+             *
              * @var Users $User
              */
             $user = $this->getUser();
@@ -263,16 +273,32 @@ final class SpontaneousApplicationController extends AbstractController
         $user = $this->getUser();
         $profil = $user->getProfils();
 
-        $applications = []; 
-        
-        if ($profil) { 
+        $applications = [];
+
+        if ($profil) {
             $applications = $applicationsRepository->findBy(
-                ['profils' => $profil], 
-                ['sentAt' => 'DESC'] ); 
+                ['profils' => $profil],
+                ['sentAt' => 'DESC'] );
         }
 
         return $this->render('spontaneous_application/application_send_list.html.twig',[
             'applications' => $applications,
+        ]);
+    }
+
+
+    #[Route('/messages', name: 'app_spontaneous_message')]
+    public function message(
+        ImapService $imapService,
+    ): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER', 'ROLE_FREELANCE');
+
+        $messages = $imapService->getMessagesForView();
+
+        return $this->render('spontaneous_application/message.html.twig',
+        [
+            'messages' => $messages,
         ]);
     }
 }

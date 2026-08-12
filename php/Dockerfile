@@ -1,6 +1,5 @@
 FROM php:8.4-apache
 
-# Installation des pré-requis Symfony
 RUN apt-get update \
     && apt-get install -y \
     build-essential \

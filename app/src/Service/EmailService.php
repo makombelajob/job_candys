@@ -60,7 +60,9 @@ class EmailService
 
         $email = (new TemplatedEmail())
             ->from(new Address($senderEmail, $senderName))
-            ->replyTo(new Address($personalEmail, $senderName))
+            ->replyTo(new Address(
+                'reply@send.job-candys.jobmakombela.fr', 
+                $senderName))
             ->to($to)
             ->subject($subject)
             ->htmlTemplate("spontaneous_application/$template.html.twig")

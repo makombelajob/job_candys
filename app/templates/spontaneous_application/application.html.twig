@@ -10,7 +10,15 @@
 	{% endblock %}
 
 	<div class="full-screen">
+
+
 		<div class="card">
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success">
+					{{ message }}
+				</div>
+			{% endfor %}
+
 			<h1>Envoyer une candidature</h1>
 
 			<div class="info">
