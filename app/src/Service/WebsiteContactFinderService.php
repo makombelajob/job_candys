@@ -33,12 +33,15 @@ class WebsiteContactFinderService
         '/contact-us',
         '/contactez-nous',
         '/en/contact-us',
+        '/en/contact',
         '/nous-contacter',
+        '/fr/contactez-nous',
         '/localisation',
         '/localisation.php',
         '/localisation.php?lang=fr',
         '/mentions-legales',
         '/mentions-legales.php',
+        '/fr/accueil/nous-contacter.html',
     ];
 
     private const EXCLUDED_KEYWORDS = [
