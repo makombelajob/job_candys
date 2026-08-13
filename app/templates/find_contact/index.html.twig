@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FindContactController!
+{% block title %}Recherche contacts
 {% endblock %}
 
 {% block body %}
@@ -13,18 +13,18 @@
 		<div class="card">
 			<h1>Recherche contacts</h1>
 
+			{% if errorMessage %}
+				<div class="alert alert-danger" role="alert">
+					{{ errorMessage }}
+				</div>
+			{% endif %}
+
 			<div class="info">
 				{% if website is defined and website %}
 					<p>
-						Site analysé :
-						<strong>{{ website }}</strong>
+						<strong>Site analysé :</strong>
+						{{ website }}
 					</p>
-				{% endif %}
-
-				{% if message is defined %}
-					<div class="info">
-						{{ message }}
-					</div>
 				{% endif %}
 
 				{% if emails is defined and emails %}
@@ -37,7 +37,7 @@
 							{% endfor %}
 						</ul>
 					</div>
-				{% elseif emails is defined %}
+				{% elseif emails is defined and emails is null and not errorMessage %}
 					<div class="info">
 						Aucun contact trouvé.
 					</div>
@@ -54,11 +54,11 @@
 			{% else %}
 
 				<div class="actions">
-					{% if company.companyContacts|length > 0 %}
+					{% if company is defined and company.companyContacts|length > 0 %}
 						<a href="{{ path('app_spontaneous_application_send', {'siret': company.siret}) }}" id="trouver-contact" class="btn primary">
 							Postuler
 						</a>
-					{% else %}
+					{% elseif company is defined %}
 						<a href="{{ path('app_edit_contact', {'siret': company.siret}) }}" class="btn primary">
 
 							Ajouter manuellement un contact

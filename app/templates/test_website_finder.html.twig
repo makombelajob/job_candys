@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test WebsiteFinderService
+{% endblock %}
+
+{% block body %}
+	<div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+		<h1>Test WebsiteFinderService</h1>
+
+		<div style="margin: 20px 0;">
+			<strong>Entreprise :</strong>
+			{{ company }}
+		</div>
+
+		{% if website %}
+			<div style="margin: 20px 0; padding: 10px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 3px; color: #155724;">
+				<strong>✅ Site trouvé :</strong>
+				<a href="{{ website }}" target="_blank" style="color: #155724; text-decoration: underline;">
+					{{ website }}
+				</a>
+			</div>
+		{% else %}
+			<div style="margin: 20px 0; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 3px; color: #721c24;">
+				<strong>❌ Aucun site trouvé</strong>
+			</div>
+		{% endif %}
+
+		<hr>
+
+		<h3>Tester avec une autre entreprise :</h3>
+		<ul>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'Google'}) }}">Google</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'Amazon'}) }}">Amazon</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'Microsoft'}) }}">Microsoft</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'OpenAI'}) }}">OpenAI</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'GitHub'}) }}">GitHub</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'Airbus'}) }}">Airbus</a></li>
+			<li><ahref="{{ path('app_test_website_finder', {'company': 'Siemens'}) }}">Siemens</a></li>
+		</ul>
+	</div>
+{% endblock %}

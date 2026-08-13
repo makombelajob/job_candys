@@ -27,69 +27,141 @@ final class FindContactController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $company = $this->companiesRepository->findOneBy([
-            'siret' => $siret
-        ]);
+        $emails = [];
+        $errorMessage = null;
+        $company = null;
+        $website = null;
 
-        if (!$company) {
-            return $this->render('find_contact/index.html.twig', [
-                'emails' => null,
-                'message' => 'Entreprise introuvable.',
+        try {
+
+            /*
+             * ==========================================================
+             * 1. ON COMMENCE PAR LA BDD
+             * ==========================================================
+             */
+            $company = $this->companiesRepository->findOneBy([
+                'siret' => $siret
             ]);
-        }
 
-        $website = $company->getWebSite();
+            if (!$company) {
+                $errorMessage = 'Entreprise introuvable.';
 
-        if (!$website) {
-            return $this->render('find_contact/index.html.twig', [
-                'emails' => null,
-                'message' => 'Aucun site enregistré.',
-            ]);
+                return $this->render('find_contact/index.html.twig', [
+                    'company' => null,
+                    'website' => null,
+                    'emails' => null,
+                    'errorMessage' => $errorMessage,
+                ]);
+            }
+
+            /*
+             * ==========================================================
+             * 2. LE SITE VIENT DE LA BDD
+             * ==========================================================
+             */
+            $website = $company->getWebSite();
+
+            if (!$website) {
+                $errorMessage = 'Aucun site enregistré.';
+
+                return $this->render('find_contact/index.html.twig', [
+                    'company' => $company,
+                    'website' => null,
+                    'emails' => null,
+                    'errorMessage' => $errorMessage,
+                ]);
+            }
+
+            /*
+             * ==========================================================
+             * 3. ON CHERCHE D'ABORD LES CONTACTS EN BDD
+             * ==========================================================
+             */
+            $existingContacts = $company->getCompanyContacts();
+
+            if ($existingContacts->count() > 0) {
+
+                /*
+                 * Des contacts existent déjà.
+                 *
+                 * On les utilise directement.
+                 * AUCUN appel au WebsiteContactFinderService.
+                 */
+                foreach ($existingContacts as $contact) {
+
+                    if ($contact->getEmail()) {
+                        $emails[] = $contact->getEmail();
+                    }
+                }
+
+            } else {
+
+                /*
+                 * ======================================================
+                 * 4. AUCUN CONTACT EN BDD
+                 *
+                 * On lance seulement maintenant la recherche externe.
+                 * ======================================================
+                 */
+                try {
+
+                    $foundEmails = $this->websiteContactFinderService
+                        ->findContacts($website) ?? [];
+
+                    $emails = $foundEmails;
+
+                    /*
+                     * ==================================================
+                     * 5. SAUVEGARDE DES CONTACTS TROUVÉS
+                     * ==================================================
+                     */
+                    foreach ($emails as $email) {
+
+                        if (empty($email)) {
+                            continue;
+                        }
+
+                        $contact = new CompanyContacts();
+
+                        $contact->setEmail($email);
+                        $contact->setCompany($company);
+
+                        $this->entityManager->persist($contact);
+                    }
+
+                    $this->entityManager->flush();
+
+                } catch (\InvalidArgumentException $e) {
+
+                    $errorMessage = 'Erreur : ' . $e->getMessage();
+
+                } catch (\Exception $e) {
+
+                    $errorMessage =
+                        'Une erreur s\'est produite lors de la recherche de contacts.';
+                }
+            }
+
+        } catch (\Exception $e) {
+
+            $errorMessage =
+                'Une erreur s\'est produite. Veuillez réessayer.';
         }
 
         /*
-         * On vérifie d'abord si des contacts existent déjà
-         * pour cette entreprise.
+         * ==========================================================
+         * 6. AFFICHAGE
+         * ==========================================================
          */
-        $existingContacts = $company->getCompanyContacts();
-
-        if ($existingContacts->count() > 0) {
-
-            // Des contacts existent déjà :
-            // on ne relance pas la recherche.
-            $emails = [];
-
-            foreach ($existingContacts as $contact) {
-                $emails[] = $contact->getEmail();
-            }
-
-        } else {
-
-            // Aucun contact existant :
-            // on lance la recherche.
-            $emails = $this->websiteContactFinderService->findContacts($website) ?? [];
-
-            foreach ($emails as $email) {
-
-                $contact = new CompanyContacts();
-
-                $contact->setEmail($email);
-                $contact->setCompany($company);
-
-                $this->entityManager->persist($contact);
-            }
-
-            $this->entityManager->flush();
-        }
-
         return $this->render('find_contact/index.html.twig', [
             'company' => $company,
             'website' => $website,
-            'emails' => $emails,
+            'emails' => !empty($emails) ? $emails : null,
+            'errorMessage' => $errorMessage,
         ]);
     }
 
-    
+
     #[Route('/edit/contact/{siret}', name: 'app_edit_contact')]
     public function edit(
         string $siret,

@@ -14,6 +14,12 @@
 		<div class="card">
 			<h1>Recherche site officiel</h1>
 
+			{% if errorMessage %}
+				<div class="alert alert-danger" role="alert">
+					{{ errorMessage }}
+				</div>
+			{% endif %}
+
 			<div class="info">
 				<p>
 					<strong>Nom :</strong>
@@ -32,17 +38,17 @@
 
 				<p>
 					<strong>Site web :</strong>
-					{% if resultat starts with 'http' %}
+					{% if resultat is not null %}
 						<a href="{{ resultat }}" target="_blank">
 							{{ resultat }}
 						</a>
 					{% else %}
-						{{ resultat }}
+						<em>Aucun site trouvé</em>
 					{% endif %}
 				</p>
 			</div>
 
-			{% if resultat starts with 'http' %}
+			{% if resultat is not null %}
 
 				{% if is_granted('ROLE_FREELANCE') %}
 					<div class="actions">

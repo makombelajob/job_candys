@@ -12,7 +12,6 @@ use App\Entity\Companies;
 use App\Repository\CompaniesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-
 final class FindWebController extends AbstractController
 {
     public function __construct(
@@ -20,103 +19,176 @@ final class FindWebController extends AbstractController
         private WebsiteFinderService $websiteFinderService,
         private CompaniesRepository $companiesRepository,
         private EntityManagerInterface $entityManager,
-    )
-    {
-        /**
-         * Nothing to construct for now
-         */
+    ) {
     }
-
 
     #[Route('/find/web/{siret}', name: 'app_find_web')]
     public function index(string $siret, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER', 'ROLE_FREELANCE');
 
+        $nom = '';
+        $adresse = '';
+        $resultat = null;
+        $errorMessage = null;
 
         /*
-         * Transformation SIRET -> SIREN
+         * ==========================================================
+         * 1. ON COMMENCE PAR CHERCHER LE SIRET EN BDD
+         * ==========================================================
          */
-        $siren = substr($siret, 0, 9);
+        $company = $this->companiesRepository->findOneBy([
+            'siret' => $siret
+        ]);
 
         /*
-         * Récupération des informations INSEE
+         * ==========================================================
+         * 2. SI LE SITE EXISTE EN BDD
+         * ==========================================================
+         *
+         * On utilise directement celui de la BDD.
+         * Aucun appel au WebsiteFinderService.
          */
-        $entreprise = $this->inseeApiService->findBySiren($siren);
+        if ($company && !empty($company->getWebSite())) {
 
-        /*
-         * Récupération établissement
-         */
-        $etablissement = $entreprise['etablissements'][0] ?? [];
+            $nom = $company->getFullName() ?? '';
+            $adresse = $company->getAddress() ?? '';
+            $resultat = $company->getWebSite();
 
-        /*
-         * Nom entreprise
-         */
-        $nom = $etablissement['uniteLegale']['denominationUniteLegale']
-            ?? '';
+        } else {
 
+            /*
+             * ======================================================
+             * 3. PAS DE SITE EN BDD
+             *
+             * On récupère les informations INSEE.
+             * ======================================================
+             */
+            try {
 
-        /*
-         * Construction adresse complète
-         */
-        $adresseData = $etablissement['adresseEtablissement'] ?? [];
+                /*
+                 * Transformation SIRET -> SIREN
+                 */
+                $siren = substr($siret, 0, 9);
 
+                /*
+                 * Récupération des informations INSEE
+                 */
+                $entreprise = $this->inseeApiService->findBySiren($siren);
 
-        $adresse = trim(
-            ($adresseData['numeroVoieEtablissement'] ?? '') . ' ' .
-            ($adresseData['typeVoieEtablissement'] ?? '') . ' ' .
-            ($adresseData['libelleVoieEtablissement'] ?? '')
-        );
+                /*
+                 * Récupération établissement
+                 */
+                $etablissement = $entreprise['etablissements'][0] ?? [];
 
+                /*
+                 * Nom entreprise
+                 */
+                $nom = $etablissement['uniteLegale']['denominationUniteLegale'] ?? '';
 
-        $ville = trim(
-            ($adresseData['codePostalEtablissement'] ?? '') . ' ' .
-            ($adresseData['libelleCommuneEtablissement'] ?? '')
-        );
+                /*
+                 * Construction adresse complète
+                 */
+                $adresseData = $etablissement['adresseEtablissement'] ?? [];
 
+                $adresse = trim(
+                    ($adresseData['numeroVoieEtablissement'] ?? '') . ' ' .
+                    ($adresseData['typeVoieEtablissement'] ?? '') . ' ' .
+                    ($adresseData['libelleVoieEtablissement'] ?? '')
+                );
 
-        if ($ville !== '') {
-            $adresse .= "\n" . $ville;
+                $ville = trim(
+                    ($adresseData['codePostalEtablissement'] ?? '') . ' ' .
+                    ($adresseData['libelleCommuneEtablissement'] ?? '')
+                );
+
+                if ($ville !== '') {
+                    $adresse .= "\n" . $ville;
+                }
+
+                /*
+                 * ==================================================
+                 * 4. RECHERCHE DU SITE
+                 *
+                 * Uniquement parce que la BDD n'en possède pas.
+                 * ==================================================
+                 */
+                if (!empty($nom)) {
+
+                    try {
+
+                        $resultat = $this->websiteFinderService->findWebsite($nom);
+
+                    } catch (\InvalidArgumentException $e) {
+
+                        $errorMessage = 'Erreur : ' . $e->getMessage();
+
+                    } catch (\Exception $e) {
+
+                        $errorMessage = 'Une erreur s\'est produite lors de la recherche du site web.';
+                    }
+                }
+
+                /*
+                 * ==================================================
+                 * 5. SAUVEGARDE / CREATION EN BDD
+                 * ==================================================
+                 */
+                if (!empty($nom)) {
+
+                    /*
+                     * Si l'entreprise n'existe pas encore,
+                     * on la crée.
+                     */
+                    if (!$company) {
+
+                        $company = new Companies();
+
+                        $company->setSiret($siret);
+                        $company->setCreatedAt(new \DateTimeImmutable());
+
+                        $this->entityManager->persist($company);
+                    }
+
+                    $company->setFullName($nom);
+                    $company->setAddress($adresse);
+
+                    /*
+                     * On sauvegarde le site seulement si
+                     * le service en a trouvé un.
+                     */
+                    if (!empty($resultat)) {
+                        $company->setWebSite($resultat);
+                    }
+
+                    $company->setLastCheck(new \DateTimeImmutable());
+                    $company->setUpdatedAt(new \DateTimeImmutable());
+
+                    $company->addUser($this->getUser());
+
+                    $this->entityManager->flush();
+                }
+
+            } catch (\Exception $e) {
+
+                $errorMessage =
+                    'Impossible de récupérer les informations de l\'entreprise. Vérifiez le SIRET saisi.';
+            }
         }
 
-
         /*
-         * Recherche du site avec le service PHP
+         * ==========================================================
+         * 6. AFFICHAGE
+         * ==========================================================
          */
-        $resultat = $this->websiteFinderService->findWebsite($nom);
-
-        /**
-         *  Saving in db
-         */
-
-        $website = (!empty($resultat) && $resultat !== 'Aucun site trouvé') ? $resultat : null;
-
-        $company = $this->companiesRepository->findOneBy(['siret' => $siret]);
-
-        if(!$company){
-            $company = new Companies();
-            $company->setSiret($siret);
-            $company->setCreatedAt(new \DateTimeImmutable());
-
-            $this->entityManager->persist($company);
-        }
-        $company->setFullName($nom);
-        $company->setAddress($adresse);
-        $company->setWebSite($website);
-        $company->setLastCheck(new \DateTimeImmutable());
-        $company->setUpdatedAt(new \DateTimeImmutable());
-
-        $company->addUser($this->getUser());
-
-        $this->entityManager->flush();
-
         return $this->render(
             'find_web/index.html.twig',
             [
                 'siret' => $siret,
                 'nom' => $nom,
                 'adresse' => $adresse,
-                'resultat' => $resultat ?? 'Aucun site trouvé',
+                'resultat' => $resultat,
+                'errorMessage' => $errorMessage,
             ]
         );
     }
