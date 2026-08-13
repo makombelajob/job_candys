@@ -1,155 +1,279 @@
 # Job Candys
 
-Job Candys est une application web développée avec Symfony 8.1 pour gérer des parcours de recrutement, des candidatures et des profils utilisateurs. Le projet est pensé comme une plateforme moderne, modulable et prête à évoluer avec des fonctions d’authentification, d’emailing, de gestion de base de données et d’administration.
-
-## Vue d’ensemble
-
-Ce projet combine :
-- un front-office avec des pages de présentation et de collecte de candidatures ;
-- un back-office côté templates d’administration ;
-- une couche sécurité complète avec inscription, connexion et récupération de mot de passe ;
-- une architecture Docker pour simplifier le développement local ;
-- une base de données et des migrations Doctrine pour l’évolution du modèle de données.
-
-## Fonctionnalités principales
-
-### Fonctionnalités déjà présentes
-- page d’accueil, à propos et contact ;
-- formulaires de candidature :
-  - recherche de contact ;
-  - recherche de site web ;
-  - candidature freelance ;
-  - candidature spontanée ;
-- inscription utilisateur avec mot de passe hashé ;
-- gestion de profils utilisateurs ;
-- système de réinitialisation de mot de passe prêt à l’emploi ;
-- templates dédiés à l’administration.
-
-### Fonctionnalités prévues ou déjà préparées par la configuration
-- authentification complète avec firewall Symfony Security ;
-- envoi d’emails via Symfony Mailer ;
-- gestion asynchrone des messages avec Messenger ;
-- intégration de la base de données via Doctrine ORM et migrations ;
-- administration étendue des utilisateurs, profils et entreprises ;
-- intégration possible d’un système de notifications et d’alertes.
+**Job Candys** est une plateforme de gestion et d'automatisation du recrutement développée avec **Symfony 8.1** et **PHP 8.4**. Elle permet de gérer les utilisateurs, profils, entreprises, candidatures, contacts professionnels et communications email, avec intégration des APIs **INSEE** et **Hunter**.
 
 ## Stack technique
 
-- PHP 8.4
-- Symfony 8.1
-- Twig
-- Doctrine ORM / Doctrine Migrations
-- Symfony Security
-- Symfony Mailer
-- Symfony Messenger
-- PHPUnit
-- Docker / Docker Compose
-- MySQL 8.0
-- phpMyAdmin
-- MailHog
+* **PHP 8.4**
+* **Symfony 8.1**
+* **MySQL 8.0**
+* **Doctrine ORM / Migrations**
+* **Twig, Stimulus, UX Turbo, Asset Mapper**
+* **Symfony Mailer / MailHog**
+* **PHPUnit**
+* **Docker Compose**
+* **INSEE API / Hunter API / IMAP**
 
-## Structure du projet
+## Structure
 
-- app/ : application Symfony principale
-- apache/ : configuration Apache
-- mysql/ : données de la base MySQL locale
-- php/ : image Docker PHP
-- docker-compose.yaml : orchestration des services locaux
-
-## Prérequis
-
-Avant de démarrer, assurez-vous d’avoir installé :
-- Docker
-- Docker Compose
-- Composer
-- PHP 8.4 (si vous souhaitez exécuter Symfony localement sans conteneur)
-
-## Démarrage rapide
-
-### 1. Cloner le projet
-
-```bash
-git clone <url-du-projet>
-cd job-candys
+```text
+app/
+├── src/
+│   ├── Controller/       # Requêtes HTTP et routes
+│   ├── Entity/           # Entités Doctrine
+│   ├── Service/          # Logique métier
+│   ├── Repository/       # Accès aux données
+│   ├── Form/             # Formulaires Symfony
+│   ├── Security/         # Authentification
+│   └── Kernel.php
+├── config/               # Configuration Symfony
+├── templates/            # Templates Twig
+├── public/               # Racine web
+├── tests/                # Tests PHPUnit
+├── migrations/           # Migrations Doctrine
+├── var/                  # Cache et logs
+└── vendor/               # Dépendances Composer
 ```
 
-### 2. Démarrer les services Docker
+## Entités
+
+⚠️ Les entités utilisent des noms **au pluriel**, contrairement aux conventions Symfony habituelles :
+
+`Users`, `Profils`, `Companies`, `CompanyContacts`, `Applications`, `Notifications`.
+
+Toujours utiliser les noms réels des classes présentes dans `src/Entity/`.
+
+## Services principaux
+
+| Service                       | Rôle                                       |
+| ----------------------------- | ------------------------------------------ |
+| `WebsiteFinderService`        | Recherche du site web d'une entreprise     |
+| `WebsiteContactFinderService` | Recherche de contacts sur un site          |
+| `EmailService`                | Envoi d'emails                             |
+| `UserCreatorService`          | Création des utilisateurs                  |
+| `HunterEmailVerify`           | Vérification des emails via Hunter         |
+| `ImapService`                 | Lecture des emails via IMAP                |
+| `TechnologyDetectorService`   | Détection des technologies d'un site       |
+| `InseeApiService`             | Récupération des données entreprises INSEE |
+| `FileUploader`                | Gestion des fichiers                       |
+
+Les services utilisent l'injection de dépendances Symfony et l'autowiring.
+
+## Controllers principaux
+
+`MainController` gère les pages publiques, `RegistrationController` l'inscription, `SecurityController` l'authentification, `ResetPasswordController` la récupération de mot de passe, `FindWebController` la recherche de sites, `FindContactController` la recherche de contacts, `FreelanceApplicationController` et `SpontaneousApplicationController` les candidatures, `AdminController` l'administration et `ProfilesController` les profils.
+
+Les routes utilisent les attributs PHP :
+
+```php
+#[Route('/find/web/{siret}', name: 'app_find_web')]
+```
+
+## Règle importante : BDD prioritaire
+
+Pour les recherches d'entreprises et de contacts, **la base de données est toujours prioritaire**.
+
+### Recherche de site
+
+```text
+SIRET
+  ↓
+Companies en BDD
+  ↓
+Site présent ?
+  ├── Oui → utiliser le site de la BDD
+  └── Non → INSEE → WebsiteFinderService → sauvegarde
+```
+
+`WebsiteFinderService` ne doit donc pas être appelé lorsqu'un site existe déjà en BDD.
+
+### Recherche de contacts
+
+```text
+SIRET
+  ↓
+Companies en BDD
+  ↓
+CompanyContacts existants ?
+  ├── Oui → utiliser les contacts de la BDD
+  └── Non → WebsiteContactFinderService → sauvegarde
+```
+
+Cette règle évite les recherches externes inutiles et garantit la conservation des données déjà enregistrées.
+
+## Améliorations des services
+
+`WebsiteFinderService` et `WebsiteContactFinderService` utilisent désormais `HttpClientInterface` à la place de `curl`, avec logging PSR-3, validation des entrées, gestion des erreurs et configuration HTTP cohérente.
+
+Configuration HTTP :
+
+* Timeout : **10 secondes**
+* Redirections maximales : **5**
+* User-Agent navigateur
+
+Les erreurs sont gérées avec `try/catch` dans les services et Controllers afin d'éviter d'exposer des erreurs HTTP 500 à l'utilisateur.
+
+Les niveaux de logs utilisés sont `INFO`, `DEBUG`, `WARNING` et `ERROR`.
+
+## Docker / développement
+
+Démarrer le projet :
 
 ```bash
 docker compose up -d --build
+docker exec -it job_candys_php /bin/bash
+cd /var/www/html
+composer install
+php bin/console doctrine:migrations:migrate
+php bin/console cache:clear
 ```
 
-### 3. Installer les dépendances Symfony
+### Accès locaux
 
-```bash
-docker compose exec php composer install
+| Service     | Adresse                 |
+| ----------- | ----------------------- |
+| Application | `http://localhost:8080` |
+| phpMyAdmin  | `http://localhost:8081` |
+| MailHog     | `http://localhost:8025` |
+
+### Base de données
+
+```text
+Host: database
+Port: 3306
+Database: job_candys
+User: admin
 ```
 
-### 4. Configurer la base de données
+La configuration complète se trouve dans les variables d'environnement.
 
-```bash
-docker compose exec php php bin/console doctrine:migrations:migrate
+## Variables d'environnement
+
+Exemple :
+
+```env
+APP_ENV=dev
+APP_SECRET=...
+DATABASE_URL=mysql://admin:admin7791@database:3306/job_candys
+MAILER_DSN=smtp://mailhog:1025
+
+INSEE_API_KEY=...
+HUNTER_API_KEY=...
+
+IMAP_HOST=...
+IMAP_PORT=...
+IMAP_ENCRYPTION=...
+IMAP_USERNAME=...
+IMAP_PASSWORD=...
 ```
 
-### 5. Accéder à l’application
+⚠️ Ne jamais versionner les clés API ou identifiants. Utiliser `.env.local` pour les valeurs sensibles.
 
-- application : http://localhost:8080
-- phpMyAdmin : http://localhost:8081
-- MailHog : http://localhost:8025
-
-## Variables d’environnement
-
-Le projet utilise des fichiers dotenv dans app/.env et app/.env.dev.
-
-Les variables principales à vérifier sont :
-- APP_ENV
-- APP_SECRET
-- DATABASE_URL
-- MAILER_DSN
-- MESSENGER_TRANSPORT_DSN
-
-> Note importante : la configuration Docker du projet est pensée autour de MySQL, tandis que la configuration Symfony par défaut pointe vers PostgreSQL. Il est donc conseillé d’ajuster DATABASE_URL selon votre environnement de travail.
-
-## Développement local
-
-Depuis le dossier de l’application Symfony :
+## Commandes utiles
 
 ```bash
-cd app
-php bin/console server:run
-```
-
-Ou via Docker :
-
-```bash
-docker compose exec php php bin/console cache:clear
-```
-
-## Tests
-
-```bash
-cd app
+# Tests
 php bin/phpunit
+
+# Routes
+php bin/console debug:router
+
+# Services
+php bin/console debug:container
+
+# Cache
+php bin/console cache:clear
+
+# Créer une migration
+php bin/console doctrine:migrations:diff
+
+# Exécuter les migrations
+php bin/console doctrine:migrations:migrate
+
+# SQL
+php bin/console doctrine:query:sql
 ```
 
-## Déploiement et évolution prévue
+## Conventions de développement
 
-Le projet est déjà bien avancé pour une application de recrutement et de mise en relation. Les prochaines évolutions naturelles, cohérentes avec la configuration actuelle, sont :
-- mise en place complète du workflow d’inscription/connexion ;
-- validation avancée des formulaires de candidature ;
-- gestion des rôles administrateur et utilisateur ;
-- intégration de l’emailing réel pour les confirmations et réinitialisations ;
-- ajout de notifications et de files de traitement asynchrones ;
-- extension du modèle métier avec entreprises, profils, offres et suivi des candidatures.
+1. Utiliser l'injection de dépendances par constructeur.
+2. Ne jamais instancier manuellement les services.
+3. Placer la logique métier dans les `Service`.
+4. Utiliser les `Repository` pour les requêtes complexes.
+5. Utiliser les contraintes Symfony pour la validation.
+6. Utiliser les attributs `#[Route]` pour les routes.
+7. Les Controllers doivent rester légers.
+8. Utiliser Doctrine pour les relations entre entités.
+9. Respecter les noms d'entités existants, même lorsqu'ils sont au pluriel.
+10. Conserver les chaînes et interfaces utilisateur principalement en français.
 
-## Notes de contribution
+## Sécurité
 
-Pour contribuer au projet :
-1. créer une branche dédiée ;
-2. implémenter les changements ;
-3. exécuter les tests ;
-4. soumettre une pull request avec une description claire.
+L'authentification utilise Symfony Security avec :
+
+* `app_user_provider`
+* `LoginAuthenticator`
+* authentification par formulaire
+* cookie `remember_me`
+* hachage des mots de passe via `auto`
+* entité utilisateur `Users`
+
+## Fichiers uploadés
+
+```text
+public/uploads/profiles/
+public/uploads/temp/
+```
+
+La gestion des uploads est centralisée dans `FileUploader`.
+
+## Tests et contribution
+
+Avant toute livraison :
+
+```bash
+php bin/phpunit
+php bin/console cache:clear
+```
+
+Puis tester les fonctionnalités concernées dans le navigateur et vérifier les emails via MailHog en environnement local.
+
+Workflow recommandé :
+
+```text
+Nouvelle branche
+    ↓
+Développement
+    ↓
+Tests PHPUnit
+    ↓
+Vérification navigateur
+    ↓
+Commit
+    ↓
+Push
+    ↓
+Pull Request
+```
+
+## Architecture : quelle couche utiliser ?
+
+| Besoin                   | Couche                        |
+| ------------------------ | ----------------------------- |
+| Requête HTTP / affichage | `Controller`                  |
+| Logique métier / API     | `Service`                     |
+| Requêtes BDD             | `Repository`                  |
+| Données / relations      | `Entity`                      |
+| Validation               | `Entity` / Symfony Validator  |
+| Formulaire               | `Form`                        |
+| Authentification         | `Security`                    |
+| Envoi email              | `EmailService`                |
+| Recherche de site        | `WebsiteFinderService`        |
+| Recherche de contacts    | `WebsiteContactFinderService` |
+| Vérification email       | `HunterEmailVerify`           |
 
 ---
 
-Ce README est volontairement orienté développement et préparation du projet, afin de refléter à la fois l’état actuel du code et les fonctionnalités attendues selon la configuration Symfony et Docker déjà en place.
+**Projet : Job Candys**
+**Symfony 8.1 · PHP 8.4 · MySQL 8.0**
+**Dernière mise à jour : 13/08/2026**

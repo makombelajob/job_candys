@@ -20,7 +20,7 @@ class InseeApiService
 
     public function searchEntreprise(
         string $mot,
-        int $nombre = 20,
+        int $nombre = 100,
         int $debut = 0
     ): array {
 
@@ -29,7 +29,7 @@ class InseeApiService
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($mot, $nombre, $debut) {
 
             // Cache pendant 1 heure
-            $item->expiresAfter(3600);
+            $item->expiresAfter(360000);
 
             $response = $this->client->request(
                 'GET',
