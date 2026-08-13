@@ -9,12 +9,16 @@
 	<div class="wrapper">
 
 		<h1>Recherche entreprise</h1>
+
+		{# Messages de succès #}
 		{% for message in app.flashes('success') %}
 			<div class="alert alert-success">
 				{{ message }}
 			</div>
 		{% endfor %}
 
+
+		{# Formulaire de recherche #}
 		<div class="controls">
 
 			{{ form_start(form) }}
@@ -33,71 +37,103 @@
 		</div>
 
 
-		{% if resultats and resultats.etablissements is defined and resultats.etablissements is not empty %}
+		{# Résultats #}
+		{% if resultats
+            and resultats.etablissements is defined
+            and resultats.etablissements is not empty
+        %}
 
 			<h2>Résultats</h2>
 
-			<table class="company-table">
+			<div class="table-container">
 
-				<thead>
-					<tr>
-						<th>SIRET</th>
-						<th>Nom</th>
-						<th>Activité</th>
-						<th>Localisation</th>
-						<th>Website</th>
-					</tr>
-				</thead>
+				<table class="company-table">
 
-
-				<tbody>
-
-					{% for entreprise in resultats.etablissements %}
-
+					<thead>
 						<tr>
-
-							<td>
-								{{ entreprise.siret|default('') }}
-							</td>
-							<td>
-								{{ entreprise.uniteLegale.denominationUniteLegale|default('') }}
-							</td>
-							<td>
-								{{ entreprise.uniteLegale.activitePrincipaleUniteLegale|default('') }}
-							</td>
-							<td>
-
-								{% set adresse = entreprise.adresseEtablissement %}
-
-								{{ adresse.numeroVoieEtablissement|default('') }}
-								{{ adresse.typeVoieEtablissement|default('') }}
-								{{ adresse.libelleVoieEtablissement|default('') }}
-								<br>
-								{{ adresse.codePostalEtablissement|default('') }}
-								{{ adresse.libelleCommuneEtablissement|default('') }}
-
-							</td>
-							<td>
-								{% if entreprise.siret is defined and entreprise.siret is not empty %}
-									<a class="website" href="{{ path('app_find_web', { 'siret': entreprise.siret }) }}" title="Chercher le site officiel">
-
-										<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe" viewbox="0 0 16 16">
-											<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"/>
-										</svg>
-									</a>
-								{% else %}
-									-
-								{% endif %}
-							</td>
-
+							<th>SIRET</th>
+							<th>Nom</th>
+							<th>Activité</th>
+							<th>Localisation</th>
+							<th>Website</th>
 						</tr>
-					{% endfor %}
+					</thead>
 
-				</tbody>
+					<tbody>
 
-			</table>
+						{% for entreprise in resultats.etablissements %}
+
+							{% set adresse = entreprise.adresseEtablissement|default({}) %}
+
+							<tr>
+
+								{# SIRET #}
+								<td>
+									{{ entreprise.siret|default('') }}
+								</td>
 
 
+								{# Nom #}
+								<td>
+									{{ entreprise.uniteLegale.denominationUniteLegale|default('') }}
+								</td>
+
+
+								{# Activité #}
+								<td>
+									{{ entreprise.uniteLegale.activitePrincipaleUniteLegale|default('') }}
+								</td>
+
+
+								{# Localisation #}
+								<td>
+
+									{{ adresse.numeroVoieEtablissement|default('') }}
+									{{ adresse.typeVoieEtablissement|default('') }}
+									{{ adresse.libelleVoieEtablissement|default('') }}
+
+									{% if adresse.codePostalEtablissement|default('') is not empty
+                                        or adresse.libelleCommuneEtablissement|default('') is not empty
+                                    %}
+										<br>
+										{{ adresse.codePostalEtablissement|default('') }}
+										{{ adresse.libelleCommuneEtablissement|default('') }}
+									{% endif %}
+
+								</td>
+
+
+								{# Website #}
+								<td>
+
+									{% if entreprise.siret|default('') is not empty %}
+
+										<a class="website" href="{{ path('app_find_web', { siret: entreprise.siret }) }}" title="Chercher le site officiel" aria-label="Chercher le site officiel">
+											<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-globe" viewbox="0 0 16 16">
+												<path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8"/>
+											</svg>
+										</a>
+
+									{% else %}
+
+										-
+
+									{% endif %}
+
+								</td>
+
+							</tr>
+
+						{% endfor %}
+
+					</tbody>
+
+				</table>
+
+			</div>
+
+
+			{# Aucun résultat #}
 		{% elseif resultats is not null %}
 
 			<p>
@@ -105,7 +141,6 @@
 			</p>
 
 		{% endif %}
-
 
 	</div>
 

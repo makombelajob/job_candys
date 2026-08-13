@@ -34,6 +34,7 @@ class WebsiteContactFinderService
         '/contactez-nous',
         '/en/contact-us',
         '/en/contact',
+        '/en/contacts',
         '/nous-contacter',
         '/fr/contactez-nous',
         '/localisation',
@@ -41,7 +42,8 @@ class WebsiteContactFinderService
         '/localisation.php?lang=fr',
         '/mentions-legales',
         '/mentions-legales.php',
-        '/fr/accueil/nous-contacter.html',
+        '/legal-notice/',
+        '/conditions-generales-dutilisation/',
     ];
 
     private const EXCLUDED_KEYWORDS = [

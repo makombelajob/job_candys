@@ -11,7 +11,9 @@
 	{% endblock %}
 
 	<div class="full-screen">
+
 		<div class="card">
+
 			<h1>Recherche site officiel</h1>
 
 			{% if errorMessage %}
@@ -20,7 +22,9 @@
 				</div>
 			{% endif %}
 
+
 			<div class="info">
+
 				<p>
 					<strong>Nom :</strong>
 					{{ nom }}
@@ -38,42 +42,71 @@
 
 				<p>
 					<strong>Site web :</strong>
+
 					{% if resultat is not null %}
-						<a href="{{ resultat }}" target="_blank">
+
+						<a href="{{ resultat }}" target="_blank" rel="noopener noreferrer">
 							{{ resultat }}
 						</a>
+
 					{% else %}
+
 						<em>Aucun site trouvé</em>
+
 					{% endif %}
 				</p>
+
 			</div>
 
+
+			{# Actions lorsqu'un site est trouvé #}
 			{% if resultat is not null %}
 
 				{% if is_granted('ROLE_FREELANCE') %}
+
 					<div class="actions">
-						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
+
+						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret="{{ siret }}" id="trouver-contact" class="btn primary" data-loading="Recherche...">
 							Trouver contact
 						</a>
 
 						<a href="#" id="check-web" class="btn primary" data-loading="Vérification...">
 							Check web
 						</a>
+
 					</div>
 
 				{% else %}
+
 					<div class="actions">
-						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret={{ siret }} id="trouver-contact" class="btn primary" data-loading="Recherche...">
+
+						<a href="{{ path('app_find_contact', {'siret': siret}) }}" data-siret="{{ siret }}" id="trouver-contact" class="btn primary" data-loading="Recherche...">
 							Trouver contact
 						</a>
+
+					</div>
+
+				{% endif %}
+
+				{# Aucun site trouvé #}
+			{% else %}
+
+				{% if is_granted('ROLE_FREELANCE') or is_granted('ROLE_USER') %}
+
+					<div class="actions">
+
+						<a href="{{ path('app_edit_contact', {'siret': siret}) }}" class="btn primary">
+							Ajouter un site web
+						</a>
+
 					</div>
 
 				{% endif %}
 
 			{% endif %}
 
-
 		</div>
+
 	</div>
 
 	<script src="{{ asset('js/find_web.js') }}"></script>

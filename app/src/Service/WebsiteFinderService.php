@@ -15,6 +15,7 @@ class WebsiteFinderService
         '.eu',
         '.bzh',
         '.ma',
+        '.aero',
     ];
 
     private const TIMEOUT = 10;
@@ -84,7 +85,7 @@ class WebsiteFinderService
      */
     private function checkDomain(string $domain): ?string
     {
-        $url = "https://{$domain}";
+        $url = !empty($domain) ? "https://{$domain}" : "https://www.{$domain}";
 
         try {
             $response = $this->httpClient->request(
