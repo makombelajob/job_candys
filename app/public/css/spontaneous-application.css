@@ -209,7 +209,61 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.messages-page {
+    min-height: calc(100vh - 220px);
+    box-sizing: border-box;
 
+    padding: 50px 20px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.messages-wrapper {
+    width: 100%;
+    max-width: 900px;
+}
+
+.messages-header {
+    margin-bottom: 30px;
+}
+
+.messages-header h1 {
+    margin: 0;
+
+    color: var(--profile-text);
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.messages-empty {
+    min-height: 250px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    border-radius: var(--radius-xl);
+
+    background: var(--profile-white);
+
+    border: 1px solid var(--profile-border);
+
+    box-shadow: var(--shadow-card);
+
+    text-align: center;
+}
+
+.messages-empty p {
+    margin: 0;
+
+    color: var(--profile-muted);
+
+    font-size: 1rem;
+}
 /* =====================================================
    RESPONSIVE
 ===================================================== */

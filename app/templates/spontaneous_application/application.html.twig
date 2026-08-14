@@ -1,75 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AdminController!
+{% block title %}Envoyer une candidature
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/profiles.css') }}">
 {% endblock %}
 
 {% block body %}
-	{% block stylesheets %}
-		{{ parent() }}
-		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
-	{% endblock %}
 
-	<div class="full-screen">
+	<div class="profile-page">
 
+		<div class="profile-form">
 
-		<div class="card">
+			<div class="profile-header">
+				<h1>Envoyer une candidature</h1>
+
+				{% if company is defined %}
+					<p>
+						Candidature pour :
+						<strong>{{ company.name }}</strong>
+					</p>
+				{% else %}
+					<p>Complétez les informations pour envoyer votre candidature</p>
+				{% endif %}
+			</div>
+
 			{% for message in app.flashes('success') %}
-				<div class="alert alert-success">
+				<div class="form-alert">
 					{{ message }}
 				</div>
 			{% endfor %}
 
-			<h1>Envoyer une candidature</h1>
+			{{ form_start(form, {
+                attr: {
+                    enctype: 'multipart/form-data'
+                }
+            }) }}
 
-			<div class="info">
-				{% if company is defined %}
-					<h3>
-						Candidature pour :
-						{{ company.name }}
-					</h3>
-				{% endif %}
+			<div class="form-group">
+				{{ form_label(form.contact) }}
+				{{ form_widget(form.contact) }}
+				{{ form_errors(form.contact) }}
+			</div>
 
-				{{ form_start(form, {
-                    attr: {
-                        enctype: 'multipart/form-data'
-                    }
-                }) }}
-				<div class="form-group">
-					{{ form_row(form.contact) }}
-				</div>
-				<div class="form-group">
-					<h3>CV</h3>
-					{{ form_row(form.defaultCv) }}
-					{{ form_row(form.cv) }}
+			<div class="form-group">
 
-				</div>
+				<h3>CV</h3>
 
-				<div class="form-group">
-
-					<h3>Lettre de motivation</h3>
-
-					{{ form_row(form.defaultLetter) }}
-
-					{{ form_row(form.lettreMotivation) }}
-
-				</div>
-				<div class="form-group">
-
-					{{ form_row(form.message) }}
-
-
-				</div>
-				<div class="actions">
-
-					<button type="submit" class="btn btn-primary">
-						Envoyer ma candidature
-					</button>
-
-				</div>
-				{{ form_end(form) }}
+				{{ form_row(form.defaultCv) }}
+				{{ form_row(form.cv) }}
 
 			</div>
+
+			<div class="form-group">
+
+				<h3>Lettre de motivation</h3>
+
+				{{ form_row(form.defaultLetter) }}
+				{{ form_row(form.lettreMotivation) }}
+
+			</div>
+
+			<div class="form-group">
+				{{ form_label(form.message) }}
+				{{ form_widget(form.message) }}
+				{{ form_errors(form.message) }}
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="profile-submit">
+					Envoyer ma candidature
+				</button>
+			</div>
+
+			{{ form_end(form) }}
+
 		</div>
 
 	</div>
+
 {% endblock %}
