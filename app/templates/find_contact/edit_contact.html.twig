@@ -3,64 +3,100 @@
 {% block title %}Modifier l'entreprise
 {% endblock %}
 
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/profiles.css') }}">
+{% endblock %}
+
 {% block body %}
 
-	{% block stylesheets %}
-		{{ parent() }}
-		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
-	{% endblock %}
+	<div class="profile-page">
 
-	<div class="full-screen">
-		<div class="card m-0 pt-1 pb-3">
+		<div class="profile-form">
 
-			<div class="card-header card-info">
-				<h1 class="h4 mb-0">Modifier l'entreprise</h1>
+			<div class="profile-header">
+				<h1>Modification de l'entreprise</h1>
+				<p>Modifiez les informations de l'entreprise</p>
 			</div>
 
-			<div class="info">
-				{{ form_start(form) }}
 
-				<div class="mb-3">
-					{{ form_row(form.fullName) }}
-				</div>
+			{# Messages d'erreur Symfony #}
 
-				<div class="mb-3">
-					{{ form_row(form.siret) }}
-				</div>
+			{{ include('_components/_flash_message.html.twig') }}
 
-				<div class="mb-3">
-					{{ form_row(form.webSite) }}
-				</div>
 
-				<div class="mb-3">
-					{{ form_row(form.carrePage) }}
-				</div>
+			{{ form_start(form) }}
 
-				<div class="mb-3">
-					{{ form_row(form.linkedin) }}
-				</div>
 
-				<div class="mb-3">
-					{{ form_row(form.Phone) }}
-				</div>
+			<div class="form-group">
+				{{ form_label(form.fullName) }}
+				{{ form_widget(form.fullName) }}
+				{{ form_errors(form.fullName) }}
+			</div>
 
-				<div class="mb-3">
-					{{ form_row(form.address) }}
-				</div>
 
-				<div class="mb-3">
-					{{ form_row(form.email) }}
-				</div>
+			<div class="form-group">
+				{{ form_label(form.siret) }}
+				{{ form_widget(form.siret) }}
+				{{ form_errors(form.siret) }}
+			</div>
 
-				<div class="text-center mt-4 mb-0">
-					<button type="submit" class="btn btn-primary">
-						Enregistrer
-					</button>
-				</div>
 
-				{{ form_end(form) }}
+			<div class="form-group">
+				{{ form_label(form.webSite) }}
+				{{ form_widget(form.webSite) }}
+				{{ form_errors(form.webSite) }}
+			</div>
+
+
+			<div class="form-group">
+				{{ form_label(form.carrePage) }}
+				{{ form_widget(form.carrePage) }}
+				{{ form_errors(form.carrePage) }}
+			</div>
+
+
+			<div class="form-group">
+				{{ form_label(form.linkedin) }}
+				{{ form_widget(form.linkedin) }}
+				{{ form_errors(form.linkedin) }}
+			</div>
+
+
+			<div class="form-group">
+				{{ form_label(form.Phone) }}
+				{{ form_widget(form.Phone) }}
+				{{ form_errors(form.Phone) }}
+			</div>
+
+
+			<div class="form-group">
+				{{ form_label(form.address) }}
+				{{ form_widget(form.address) }}
+				{{ form_errors(form.address) }}
+			</div>
+
+
+			<div class="form-group">
+				{{ form_label(form.email) }}
+				{{ form_widget(form.email) }}
+				{{ form_errors(form.email) }}
+			</div>
+
+
+			<div class="form-actions">
+
+				<button type="submit" class="profile-submit">
+					Enregistrer
+				</button>
 
 			</div>
+
+
+			{{ form_end(form) }}
+
 		</div>
+
 	</div>
+
 {% endblock %}

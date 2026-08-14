@@ -11,11 +11,8 @@
 {% block body %}
 	<div class="profile-choice-wrapper">
 		<div class="profile-choice-card">
-			{% for message in app.flashes('success') %}
-				<div class="alert alert-success">
-					{{ message }}
-				</div>
-			{% endfor %}
+
+			{{ include('_components/_flash_message.html.twig') }}
 
 			{% if is_granted('ROLE_FREELANCE') %}
 				<h1>Bienvenue dans votre espace FREELANCER</h1>

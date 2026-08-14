@@ -16,12 +16,7 @@
 
 			<h1>Recherche site officiel</h1>
 
-			{% if errorMessage %}
-				<div class="alert alert-danger" role="alert">
-					{{ errorMessage }}
-				</div>
-			{% endif %}
-
+			{{ include('_components/_flash_message.html.twig') }}
 
 			<div class="info">
 

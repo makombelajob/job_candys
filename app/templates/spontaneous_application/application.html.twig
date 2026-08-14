@@ -27,11 +27,8 @@
 				{% endif %}
 			</div>
 
-			{% for message in app.flashes('success') %}
-				<div class="form-alert">
-					{{ message }}
-				</div>
-			{% endfor %}
+			{{ include('_components/_flash_message.html.twig') }}
+
 
 			{{ form_start(form, {
                 attr: {

@@ -11,18 +11,7 @@
 		<h1>Recherche entreprise</h1>
 
 		{# Messages d'erreur #}
-		{% for message in app.flashes('error') %}
-			<div class="alert alert-danger">
-				{{ message }}
-			</div>
-		{% endfor %}
-
-		{# Messages de succès #}
-		{% for message in app.flashes('success') %}
-			<div class="alert alert-success">
-				{{ message }}
-			</div>
-		{% endfor %}
+		{{ include('_components/_flash_message.html.twig') }}
 
 
 		{# Formulaire de recherche #}

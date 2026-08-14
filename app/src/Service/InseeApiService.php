@@ -38,7 +38,7 @@ class InseeApiService
      */
     public function searchEntreprise(
         string $mot,
-        int $nombre = 20,
+        int $nombre = 100,
         int $debut = 0,
     ): array {
         $mot = $this->normalizeSearchTerm($mot);

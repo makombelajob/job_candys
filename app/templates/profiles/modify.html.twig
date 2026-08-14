@@ -19,11 +19,7 @@
 				<p>Modifiez vos informations personnelles</p>
 			</div>
 
-			{% for message in app.flashes('error') %}
-				<div class="form-alert">
-					{{ message }}
-				</div>
-			{% endfor %}
+			{{ include('_components/_flash_message.html.twig') }}
 
 			{{ form_start(form) }}
 
