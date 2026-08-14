@@ -1,81 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ModifyController
+{% block title %}Modification du profil
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/profiles.css') }}">
 {% endblock %}
 
 {% block body %}
-	{% block stylesheets %}
-		{{ parent() }}
-		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
-	{% endblock %}
 
-	<div class="full-screen">
-		<div class="card pb-2">
-			<h1>Modification de votre profil</h1>
+	<div class="profile-page">
+
+		<div class="profile-form">
+
+			<div class="profile-header">
+				<h1>Modification de votre profil</h1>
+				<p>Modifiez vos informations personnelles</p>
+			</div>
 
 			{% for message in app.flashes('error') %}
-				<div class="alert alert-danger">
+				<div class="form-alert">
 					{{ message }}
 				</div>
 			{% endfor %}
-			<div class="info">
 
-				{{ form_start(form) }}
-				<div>
-					<strong>{{ form_label(form.firstName) }}</strong>
-					{{ form_widget(form.firstName) }}
-					{{ form_errors(form.firstName) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.lastName) }}</strong>
-					{{ form_widget(form.lastName) }}
-					{{ form_errors(form.lastName) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.email) }}</strong>
-					{{ form_widget(form.email) }}
-					{{ form_errors(form.email) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.phone) }}</strong>
-					{{ form_widget(form.phone) }}
-					{{ form_errors(form.phone) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.city) }}</strong>
-					{{ form_widget(form.city) }}
-					{{ form_errors(form.city) }}
-				</div>
-				{% if not is_granted('ROLE_FREELANCE') %}
-					<div>
-						<strong>{{ form_label(form.defaultCv) }}</strong>
-						{{ form_widget(form.defaultCv) }}
-						{{ form_errors(form.defaultCv) }}
-					</div>
-					<div>
-						<strong>{{ form_label(form.defaultLetter) }}</strong>
-						{{ form_widget(form.defaultLetter) }}
-						{{ form_errors(form.defaultLetter) }}
-					</div>
-				{% endif %}
+			{{ form_start(form) }}
 
-				<div>
-					<strong>{{ form_label(form.linkedin) }}</strong>
-					{{ form_widget(form.linkedin) }}
-					{{ form_errors(form.linkedin) }}
-				</div>
-				<div>
-					<strong>{{ form_label(form.website) }}</strong>
-					{{ form_widget(form.website) }}
-					{{ form_errors(form.website) }}
-				</div>
-				<div class="text-center p-0 m-0 mt-2">
-					<button type="submit" class="btn btn-primary">
-						Enregistrer
-					</button>
-				</div>
-				{{ form_end(form) }}
+			<div class="form-group">
+				{{ form_label(form.firstName) }}
+				{{ form_widget(form.firstName) }}
+				{{ form_errors(form.firstName) }}
 			</div>
+
+			<div class="form-group">
+				{{ form_label(form.lastName) }}
+				{{ form_widget(form.lastName) }}
+				{{ form_errors(form.lastName) }}
+			</div>
+
+			<div class="form-group">
+				{{ form_label(form.email) }}
+				{{ form_widget(form.email) }}
+				{{ form_errors(form.email) }}
+			</div>
+
+			<div class="form-group">
+				{{ form_label(form.phone) }}
+				{{ form_widget(form.phone) }}
+				{{ form_errors(form.phone) }}
+			</div>
+
+			<div class="form-group">
+				{{ form_label(form.city) }}
+				{{ form_widget(form.city) }}
+				{{ form_errors(form.city) }}
+			</div>
+
+			{% if not is_granted('ROLE_FREELANCE') %}
+
+				<div class="form-group">
+					{{ form_label(form.defaultCv) }}
+					{{ form_widget(form.defaultCv) }}
+					{{ form_errors(form.defaultCv) }}
+				</div>
+
+				<div class="form-group">
+					{{ form_label(form.defaultLetter) }}
+					{{ form_widget(form.defaultLetter) }}
+					{{ form_errors(form.defaultLetter) }}
+				</div>
+
+			{% endif %}
+
+			<div class="form-group">
+				{{ form_label(form.linkedin) }}
+				{{ form_widget(form.linkedin) }}
+				{{ form_errors(form.linkedin) }}
+			</div>
+
+			<div class="form-group">
+				{{ form_label(form.website) }}
+				{{ form_widget(form.website) }}
+				{{ form_errors(form.website) }}
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="profile-submit">
+					Enregistrer
+				</button>
+			</div>
+
+			{{ form_end(form) }}
+
 		</div>
 
 	</div>

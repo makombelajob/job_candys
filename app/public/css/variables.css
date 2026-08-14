@@ -1,0 +1,152 @@
+:root {
+
+    /* =====================================================
+       COULEURS DE BASE
+    ===================================================== */
+
+    --color-white: #ffffff;
+
+    --color-bg: #f5f7fb;
+    --color-bg-light: #f8fafc;
+
+    --color-surface: #ffffff;
+    --color-surface-glass: rgba(255, 255, 255, 0.82);
+    --color-surface-profile: rgba(255, 255, 255, 0.88);
+
+
+    /* =====================================================
+       COULEURS PRINCIPALES
+    ===================================================== */
+
+    --color-primary: #0b525b;
+    --color-primary-dark: #06494f;
+
+    --color-primary-blue: #0d6efd;
+    --color-primary-blue-dark: #1e40af;
+
+    --color-accent: #18bbb8;
+    --color-accent-dark: #0b7f7d;
+    --color-accent-hover: #0b525b;
+
+    --color-secondary: #ffb703;
+    --color-secondary-hover: #f59e0b;
+
+
+    /* =====================================================
+       TEXTE
+    ===================================================== */
+
+    --color-text: #0f172a;
+    --color-text-dark: #162033;
+
+    --color-muted: #64748b;
+    --color-muted-light: #6b7280;
+
+    --color-placeholder: #94a3b8;
+
+
+    /* =====================================================
+       BORDURES
+    ===================================================== */
+
+    --color-border: #e2e8f0;
+    --color-border-light: #d8dde6;
+
+    --color-border-transparent: rgba(15, 23, 42, 0.08);
+
+
+    /* =====================================================
+       ERREURS
+    ===================================================== */
+
+    --color-danger: #dc2626;
+    --color-danger-dark: #b91c1c;
+
+
+    /* =====================================================
+       DIMENSIONS
+    ===================================================== */
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-xxl: 20px;
+    --radius-pill: 999px;
+
+
+    /* =====================================================
+       OMBRES
+    ===================================================== */
+
+    --shadow-small:
+        0 10px 20px rgba(11, 82, 91, 0.16);
+
+    --shadow-card:
+        0 16px 40px rgba(15, 23, 42, 0.08);
+
+    --shadow-large:
+        0 24px 60px rgba(2, 6, 23, 0.14);
+
+    --shadow-button:
+        0 10px 25px rgba(24, 187, 184, 0.25);
+
+
+    /* =====================================================
+       PROFIL / FORMULAIRE
+    ===================================================== */
+
+    --profile-bg-dark: #05282c;
+    --profile-bg-light: #0e464a;
+
+    --profile-accent: #18bbb8;
+    --profile-accent-hover: #0b525b;
+
+    --profile-text: #0f172a;
+    --profile-muted: #64748b;
+
+    --profile-white: rgba(255, 255, 255, 0.88);
+
+    --profile-border: #e2e8f0;
+
+    --profile-danger: #dc2626;
+    --profile-danger-dark: #b91c1c;
+
+    --profile-secondary: #ffb703;
+    --profile-secondary-hover: #f59e0b;
+
+    --profile-secondary-text: #162033;
+
+
+    /* =====================================================
+       SIGNUP
+    ===================================================== */
+
+    --signup-card-bg: #ffffff;
+    --signup-accent: #2563eb;
+    --signup-accent-cta: #1e40af;
+    --signup-muted: #6b7280;
+    --signup-radius: 10px;
+
+
+    /* =====================================================
+       SA
+    ===================================================== */
+
+    --sa-bg: #f5f7fb;
+    --sa-surface: rgba(255, 255, 255, 0.82);
+    --sa-primary: #0b525b;
+    --sa-primary-dark: #06494f;
+    --sa-accent: #0b7f7d;
+    --sa-text: #162033;
+    --sa-muted: #64748b;
+    --sa-border: rgba(15, 23, 42, 0.08);
+    --sa-shadow: 0 24px 60px rgba(2, 6, 23, 0.14);
+
+
+    /* =====================================================
+       ACCESSIBILITÉ / AFFICHAGE
+    ===================================================== */
+
+    color-scheme: light;
+}
