@@ -147,7 +147,7 @@ final class SpontaneousApplicationController extends AbstractController
 
                 $attachments[] = [
                     'path' => $fileUploader->getPath($cvFilename),
-                    'name' => $uploadedCv->getClientOriginalName(),
+                    'name' => 'curriculum-vitae.pdf',
                 ];
             } elseif ($defaultCv) {
                 if (!$fileUploader->exists($defaultCv)) {
@@ -164,7 +164,7 @@ final class SpontaneousApplicationController extends AbstractController
 
                 $attachments[] = [
                     'path' => $fileUploader->getPath($defaultCv),
-                    'name' => $defaultCv,
+                    'name' => 'curriculum-vitae.pdf',
                 ];
             }
 
@@ -176,7 +176,7 @@ final class SpontaneousApplicationController extends AbstractController
 
                 $attachments[] = [
                     'path' => $fileUploader->getPath($letterFilename),
-                    'name' => $uploadedLetter->getClientOriginalName(),
+                    'name' => 'lettre-de-motivation.pdf',
                 ];
             } elseif ($defaultLetter) {
                 if (!$fileUploader->exists($defaultLetter)) {
@@ -193,7 +193,7 @@ final class SpontaneousApplicationController extends AbstractController
 
                 $attachments[] = [
                     'path' => $fileUploader->getPath($defaultLetter),
-                    'name' => $defaultLetter,
+                    'name' => 'lettre-de-motivation.pdf',
                 ];
             }
 
