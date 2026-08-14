@@ -293,8 +293,12 @@ final class SpontaneousApplicationController extends AbstractController
     ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER', 'ROLE_FREELANCE');
+        /**
+         * @var Users $user;
+         */
+        $user = $this->getUser();
 
-        $messages = $imapService->getMessagesForView();
+        $messages = $imapService->getMessagesForView($user);
 
         return $this->render('spontaneous_application/message.html.twig',
         [
