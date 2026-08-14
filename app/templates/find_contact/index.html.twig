@@ -1,71 +1,134 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recherche contacts
+{% block title %}Recherche contacts{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
 {% endblock %}
 
 {% block body %}
-	{% block stylesheets %}
-		{{ parent() }}
-		<link rel="stylesheet" href="{{ asset('css/find_web.css') }}">
-	{% endblock %}
 
-	<div class="full-screen">
-		<div class="card">
-			<h1>Recherche contacts</h1>
+    <div class="full-screen">
 
-			{% if errorMessage %}
-				<div class="alert alert-danger" role="alert">
-					{{ errorMessage }}
-				</div>
-			{% endif %}
+        <div class="card">
 
-			<div class="info">
-				{% if website is defined and website %}
-					<p>
-						<strong>Site analysé :</strong>
-						{{ website }}
-					</p>
-				{% endif %}
+            <h1>Recherche contacts</h1>
 
-				{% if emails is defined and emails %}
-					<div class="info">
-						<h3>Contacts trouvés :</h3>
 
-						<ul>
-							{% for email in emails %}
-								<li>{{ email }}</li>
-							{% endfor %}
-						</ul>
-					</div>
-				{% elseif emails is defined and emails is null and not errorMessage %}
-					<div class="info">
-						Aucun contact trouvé.
-					</div>
-				{% endif %}
+            {# ======================================================
+               MESSAGE D'ERREUR
+            ====================================================== #}
 
-			</div>
-			{% if is_granted('ROLE_FREELANCE') %}
-				<div class="actions">
-					<a href="#" id="trouver-contact" class="btn primary">
-						Proposition
-					</a>
-				</div>
+            {% if errorMessage %}
 
-			{% else %}
+                <div class="alert alert-danger" role="alert">
+                    {{ errorMessage }}
+                </div>
 
-				<div class="actions">
-					{% if company is defined and company.companyContacts|length > 0 %}
-						<a href="{{ path('app_spontaneous_application_send', {'siret': company.siret}) }}" id="trouver-contact" class="btn primary">
-							Postuler
-						</a>
-					{% elseif company is defined %}
-						<a href="{{ path('app_edit_contact', {'siret': company.siret}) }}" class="btn primary">
+            {% endif %}
 
-							Ajouter manuellement un contact
-						</a>
-					{% endif %}
-				</div>
-			{% endif %}
-		</div>
-	</div>
+
+            {# ======================================================
+               INFORMATIONS
+            ====================================================== #}
+
+            <div class="info">
+
+                {% if website is defined and website %}
+
+                    <p>
+                        <strong>Site analysé :</strong>
+                        {{ website }}
+                    </p>
+
+                {% endif %}
+
+
+                {% if emails is defined and emails %}
+
+                    <div class="info">
+
+                        <h3>Contacts trouvés :</h3>
+
+                        <ul>
+
+                            {% for email in emails %}
+
+                                <li>
+                                    {{ email }}
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+
+                {% elseif emails is defined and emails is null and not errorMessage %}
+
+                    <div class="info">
+                        Aucun contact trouvé.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            {# ======================================================
+               ACTIONS
+            ====================================================== #}
+
+            {% if is_granted('ROLE_FREELANCE') %}
+
+                <div class="actions">
+
+                    <a
+                        href="#"
+                        id="trouver-contact"
+                        class="btn primary"
+                    >
+                        Proposition
+                    </a>
+
+                </div>
+
+            {% else %}
+
+                <div class="actions">
+
+                    {% if hasContacts %}
+
+                        <a
+                            href="{{ path('app_spontaneous_application_send', {
+                                'siret': company.siret
+                            }) }}"
+                            id="trouver-contact"
+                            class="btn primary"
+                        >
+                            Postuler
+                        </a>
+
+                    {% elseif company is defined and company %}
+
+                        <a
+                            href="{{ path('app_edit_contact', {
+                                'siret': company.siret
+                            }) }}"
+                            class="btn primary"
+                        >
+                            Ajouter manuellement un contact
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
 {% endblock %}

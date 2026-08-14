@@ -2,21 +2,23 @@
 
 namespace App\Controller;
 
+use App\Entity\Companies;
 use App\Entity\CompanyContacts;
+use App\Form\CompanyEditType;
 use App\Repository\CompaniesRepository;
 use App\Repository\CompanyContactsRepository;
 use App\Service\WebsiteContactFinderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;use App\Entity\Companies;
-use App\Form\CompanyEditType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 final class FindContactController extends AbstractController
 {
     public function __construct(
         private CompaniesRepository $companiesRepository,
+        private CompanyContactsRepository $companyContactsRepository,
         private WebsiteContactFinderService $websiteContactFinderService,
         private EntityManagerInterface $entityManager,
     ) {
@@ -31,78 +33,94 @@ final class FindContactController extends AbstractController
         $errorMessage = null;
         $company = null;
         $website = null;
+        $existingContacts = [];
 
         try {
 
             /*
              * ==========================================================
-             * 1. ON COMMENCE PAR LA BDD
+             * 1. RECHERCHE DE L'ENTREPRISE
              * ==========================================================
              */
+
             $company = $this->companiesRepository->findOneBy([
-                'siret' => $siret
+                'siret' => $siret,
             ]);
 
             if (!$company) {
-                $errorMessage = 'Entreprise introuvable.';
-
                 return $this->render('find_contact/index.html.twig', [
                     'company' => null,
                     'website' => null,
                     'emails' => null,
-                    'errorMessage' => $errorMessage,
+                    'errorMessage' => 'Entreprise introuvable.',
+                    'hasContacts' => false,
                 ]);
             }
 
+
             /*
              * ==========================================================
-             * 2. LE SITE VIENT DE LA BDD
+             * 2. RÉCUPÉRATION DU SITE
              * ==========================================================
              */
+
             $website = $company->getWebSite();
 
             if (!$website) {
-                $errorMessage = 'Aucun site enregistré.';
-
                 return $this->render('find_contact/index.html.twig', [
                     'company' => $company,
                     'website' => null,
                     'emails' => null,
-                    'errorMessage' => $errorMessage,
+                    'errorMessage' => 'Aucun site enregistré.',
+                    'hasContacts' => false,
                 ]);
             }
 
+
             /*
              * ==========================================================
-             * 3. ON CHERCHE D'ABORD LES CONTACTS EN BDD
+             * 3. RECHERCHE DIRECTE DES CONTACTS EN BDD
+             * ==========================================================
+             *
+             * On ne passe plus par :
+             *
+             * $company->getCompanyContacts()
+             *
+             * La BDD est directement interrogée via le repository.
+             */
+
+            $existingContacts = $this->companyContactsRepository
+                ->findByCompany($company);
+
+
+            /*
+             * ==========================================================
+             * 4. DES CONTACTS EXISTENT DÉJÀ
              * ==========================================================
              */
-            $existingContacts = $company->getCompanyContacts();
 
-            if ($existingContacts->count() > 0) {
+            if (count($existingContacts) > 0) {
 
-                /*
-                 * Des contacts existent déjà.
-                 *
-                 * On les utilise directement.
-                 * AUCUN appel au WebsiteContactFinderService.
-                 */
                 foreach ($existingContacts as $contact) {
 
-                    if ($contact->getEmail()) {
-                        $emails[] = $contact->getEmail();
+                    $email = $contact->getEmail();
+
+                    if ($email) {
+                        $emails[] = $email;
                     }
                 }
 
-            } else {
 
                 /*
-                 * ======================================================
-                 * 4. AUCUN CONTACT EN BDD
+                 * ==========================================================
+                 * 5. AUCUN CONTACT EN BDD
                  *
-                 * On lance seulement maintenant la recherche externe.
-                 * ======================================================
+                 * On lance alors la recherche sur le site.
+                 * ==========================================================
                  */
+
+            } else {
+
                 try {
 
                     $foundEmails = $this->websiteContactFinderService
@@ -110,14 +128,18 @@ final class FindContactController extends AbstractController
 
                     $emails = $foundEmails;
 
+
                     /*
                      * ==================================================
-                     * 5. SAUVEGARDE DES CONTACTS TROUVÉS
+                     * 6. SAUVEGARDE DES CONTACTS TROUVÉS
                      * ==================================================
                      */
+
                     foreach ($emails as $email) {
 
-                        if (empty($email)) {
+                        $email = trim((string) $email);
+
+                        if ($email === '') {
                             continue;
                         }
 
@@ -131,6 +153,20 @@ final class FindContactController extends AbstractController
 
                     $this->entityManager->flush();
 
+
+                    /*
+                     * ==================================================
+                     * 7. ON RELIT LES CONTACTS DEPUIS LA BDD
+                     *
+                     * Important :
+                     * après avoir créé les contacts, on actualise la
+                     * variable afin que le bouton soit cohérent.
+                     * ==================================================
+                     */
+
+                    $existingContacts = $this->companyContactsRepository
+                        ->findByCompany($company);
+
                 } catch (\InvalidArgumentException $e) {
 
                     $errorMessage = 'Erreur : ' . $e->getMessage();
@@ -142,22 +178,35 @@ final class FindContactController extends AbstractController
                 }
             }
 
+
         } catch (\Exception $e) {
 
             $errorMessage =
                 'Une erreur s\'est produite. Veuillez réessayer.';
         }
 
+
         /*
          * ==========================================================
-         * 6. AFFICHAGE
+         * 8. LA BDD EST LA SOURCE DE VÉRITÉ POUR LE BOUTON
          * ==========================================================
          */
+
+        $hasContacts = count($existingContacts) > 0;
+
+
+        /*
+         * ==========================================================
+         * 9. AFFICHAGE
+         * ==========================================================
+         */
+
         return $this->render('find_contact/index.html.twig', [
             'company' => $company,
             'website' => $website,
             'emails' => !empty($emails) ? $emails : null,
             'errorMessage' => $errorMessage,
+            'hasContacts' => $hasContacts,
         ]);
     }
 
@@ -166,62 +215,160 @@ final class FindContactController extends AbstractController
     public function edit(
         string $siret,
         Request $request,
-        EntityManagerInterface $entityManager,
-        CompanyContactsRepository $companyContactsRepository,
     ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $company = $entityManager->getRepository(Companies::class)->findOneBy(['siret' => $siret]);
+
+        /*
+         * ==========================================================
+         * 1. RECHERCHE DE L'ENTREPRISE
+         * ==========================================================
+         */
+
+        $company = $this->companiesRepository->findOneBy([
+            'siret' => $siret,
+        ]);
 
         if (!$company) {
-            throw $this->createNotFoundException('Entreprise introuvable.');
+            throw $this->createNotFoundException(
+                'Entreprise introuvable.'
+            );
         }
 
-        $form = $this->createForm(CompanyEditType::class, $company);
-        $contact = $company->getCompanyContacts()->first();
-        if($contact !== false) {
-            $form->get('email')->setData($contact->getEmail());
 
+        /*
+         * ==========================================================
+         * 2. RECHERCHE DIRECTE DU CONTACT
+         * ==========================================================
+         */
+
+        $contact = $this->companyContactsRepository->findOneBy([
+            'company' => $company,
+        ]);
+
+
+        /*
+         * ==========================================================
+         * 3. FORMULAIRE
+         * ==========================================================
+         */
+
+        $form = $this->createForm(
+            CompanyEditType::class,
+            $company
+        );
+
+
+        /*
+         * ==========================================================
+         * 4. PRÉREMPLISSAGE
+         * ==========================================================
+         */
+
+        if ($contact) {
+            $form->get('email')->setData(
+                $contact->getEmail()
+            );
         }
+
 
         $form->handleRequest($request);
+
+
+        /*
+         * ==========================================================
+         * 5. ENREGISTREMENT
+         * ==========================================================
+         */
+
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $email = trim($form->get('email')->getData());
+            $email = trim(
+                (string) $form->get('email')->getData()
+            );
 
-            $contact = $company->getCompanyContacts()->first();
 
-            if ($contact !== false) {
-                // Contact existant : on met simplement à jour l'email
+            /*
+             * On vérifie à nouveau directement en BDD.
+             */
+
+            $contact = $this->companyContactsRepository->findOneBy([
+                'company' => $company,
+            ]);
+
+
+            /*
+             * Contact existant
+             */
+
+            if ($contact) {
+
                 $contact->setEmail($email);
+
+
+                /*
+                 * Nouveau contact
+                 */
+
             } else {
-                // Aucun contact : on en crée un
+
                 $contact = new CompanyContacts();
+
                 $contact->setEmail($email);
                 $contact->setCompany($company);
 
-                $entityManager->persist($contact);
+                $this->entityManager->persist($contact);
             }
 
-            $company->setUpdatedAt(new \DateTimeImmutable());
 
-            $entityManager->persist($company);
-            $entityManager->flush();
+            /*
+             * Mise à jour de l'entreprise
+             */
+
+            $company->setUpdatedAt(
+                new \DateTimeImmutable()
+            );
+
+            $this->entityManager->persist($company);
+
+            $this->entityManager->flush();
+
+
+            /*
+             * Message de confirmation
+             */
 
             $this->addFlash(
                 'success',
                 'Le contact a été enregistré avec succès.'
             );
 
-            return $this->redirectToRoute('app_spontaneous_application_send', [
-                'siret' => $company->getSiret(),
-            ]);
+
+            /*
+             * Retour vers la candidature
+             */
+
+            return $this->redirectToRoute(
+                'app_spontaneous_application_send',
+                [
+                    'siret' => $company->getSiret(),
+                ]
+            );
         }
 
-        return $this->render('find_contact/edit_contact.html.twig', [
-            'form' => $form->createView(),
-            'company' => $company,
-        ]);
-    }
 
+        /*
+         * ==========================================================
+         * 6. AFFICHAGE DU FORMULAIRE
+         * ==========================================================
+         */
+
+        return $this->render(
+            'find_contact/edit_contact.html.twig',
+            [
+                'form' => $form->createView(),
+                'company' => $company,
+            ]
+        );
+    }
 }

@@ -40,4 +40,14 @@ class CompanyContactsRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function hasContactsForCompany(Companies $company): bool
+    {
+        return (bool) $this->createQueryBuilder('cc')
+            ->select('1')
+            ->andWhere('cc.company = :company')
+            ->setParameter('company', $company)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

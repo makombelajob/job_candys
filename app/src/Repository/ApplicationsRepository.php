@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Applications;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Companies;
+use App\Entity\Profils;
 
 /**
  * @extends ServiceEntityRepository<Applications>
@@ -40,4 +42,18 @@ class ApplicationsRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function hasApplicationForProfileAndCompany(
+        Profils $profil,
+        Companies $company
+    ): bool {
+        return (bool) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.profils = :profil')
+            ->andWhere('a.companies = :company')
+            ->setParameter('profil', $profil)
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 }

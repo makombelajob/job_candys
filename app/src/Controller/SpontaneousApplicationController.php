@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 
+
 final class SpontaneousApplicationController extends AbstractController
 {
     private ParameterBagInterface $params;
@@ -61,12 +62,15 @@ final class SpontaneousApplicationController extends AbstractController
         );
     }
 
-    #[Route('/spontaneous/application/send/{siret}', name: 'app_spontaneous_application_send')]
+    #[Route(
+        '/spontaneous/application/send/{siret}',
+        name: 'app_spontaneous_application_send'
+    )]
     public function send(
         string $siret,
         Request $request,
-        InseeApiService $inseeApiService,
         CompaniesRepository $companiesRepository,
+        ApplicationsRepository $applicationsRepository,
         EmailService $emailService,
         FileUploader $fileUploader,
         EntityManagerInterface $entityManager,
@@ -74,38 +78,91 @@ final class SpontaneousApplicationController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /**
-         * Retrieve company
+         * Utilisateur connecté
+         *
+         * @var Users $user
          */
-        $company = $companiesRepository->findOneBy(['siret' => $siret]);
+        $user = $this->getUser();
+
+        /**
+         * Récupération de l'entreprise
+         */
+        $company = $companiesRepository->findOneBy([
+            'siret' => $siret,
+        ]);
 
         if (!$company) {
-            throw $this->createNotFoundException('Entreprise introuvable.');
+            throw $this->createNotFoundException(
+                'Entreprise introuvable.'
+            );
         }
 
+        /**
+         * Récupération du profil
+         */
+        $profil = $user->getProfils();
+
+        if (!$profil) {
+            $this->addFlash(
+                'error',
+                'Votre profil est introuvable.'
+            );
+
+            return $this->redirectToRoute(
+                'app_spontaneous_application',
+                ['siret' => $siret]
+            );
+        }
+
+        /**
+         * Vérification :
+         * l'utilisateur a-t-il déjà envoyé une candidature
+         * à cette entreprise ?
+         */
+        if (
+            $applicationsRepository->hasApplicationForProfileAndCompany(
+                $profil,
+                $company
+            )
+        ) {
+            $this->addFlash(
+                'error',
+                'Vous avez déjà envoyé une candidature à cette entreprise.'
+            );
+
+            return $this->redirectToRoute(
+                'app_spontaneous_application',
+                ['siret' => $siret]
+            );
+        }
+
+        /**
+         * Contacts de l'entreprise
+         */
         $contacts = $company->getCompanyContacts();
 
-        $emails = [];
-
-        foreach ($contacts as $contact) {
-            if ($contact->getEmail()) {
-                $emails[] = $contact->getEmail();
-            }
-        }
-
-        $emails = array_values(array_unique($emails));
-
+        /**
+         * Création de la candidature
+         */
         $application = new Applications();
-        $profil = $this->getUser()->getProfils();
 
-        $form = $this->createForm(ApplicationType::class, $application, [
-            'contacts' => $contacts,
-            'profilCv' => $profil?->getDefaultCv(),
-            'profilLetter' => $profil?->getDefaultLetter(),
-        ]);
+        $form = $this->createForm(
+            ApplicationType::class,
+            $application,
+            [
+                'contacts' => $contacts,
+                'profilCv' => $profil->getDefaultCv(),
+                'profilLetter' => $profil->getDefaultLetter(),
+            ]
+        );
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /**
+             * Contact sélectionné
+             */
             $contact = $form->get('contact')->getData();
 
             $email = null;
@@ -114,7 +171,9 @@ final class SpontaneousApplicationController extends AbstractController
                 $email = $contact->getEmail();
             }
 
-            // Aucun email disponible pour le contact
+            /**
+             * Vérification de l'email du contact
+             */
             if (!$email) {
                 $this->addFlash(
                     'error',
@@ -129,28 +188,50 @@ final class SpontaneousApplicationController extends AbstractController
 
             $message = $form->get('message')->getData();
 
-            // Fichiers sélectionnés depuis le profil
+            /**
+             * Fichiers sélectionnés depuis le profil
+             */
             $defaultCv = $form->get('defaultCv')->getData();
             $defaultLetter = $form->get('defaultLetter')->getData();
 
-            // Nouveaux fichiers uploadés
+            /**
+             * Nouveaux fichiers uploadés
+             */
             $uploadedCv = $form->get('cv')->getData();
             $uploadedLetter = $form->get('lettreMotivation')->getData();
 
+            /**
+             * Pièces jointes
+             */
             $attachments = [];
 
             /**
+             * Variables utilisées pour le stockage
+             * de la candidature
+             */
+            $cvFilename = null;
+            $letterFilename = null;
+
+            /**
+             * =========================
              * CV
+             * =========================
              */
             if ($uploadedCv) {
+
                 $cvFilename = $fileUploader->upload($uploadedCv);
 
                 $attachments[] = [
                     'path' => $fileUploader->getPath($cvFilename),
+
+                    // Nom visible par le destinataire
                     'name' => 'curriculum-vitae.pdf',
                 ];
+
             } elseif ($defaultCv) {
+
                 if (!$fileUploader->exists($defaultCv)) {
+
                     $this->addFlash(
                         'error',
                         'Le CV sélectionné dans votre profil est introuvable.'
@@ -162,24 +243,40 @@ final class SpontaneousApplicationController extends AbstractController
                     );
                 }
 
+                $cvFilename = $defaultCv;
+
                 $attachments[] = [
                     'path' => $fileUploader->getPath($defaultCv),
+
+                    // Nom visible par le destinataire
                     'name' => 'curriculum-vitae.pdf',
                 ];
             }
 
             /**
-             * Lettre de motivation
+             * =========================
+             * LETTRE DE MOTIVATION
+             * =========================
              */
             if ($uploadedLetter) {
-                $letterFilename = $fileUploader->upload($uploadedLetter);
+
+                $letterFilename = $fileUploader->upload(
+                    $uploadedLetter
+                );
 
                 $attachments[] = [
-                    'path' => $fileUploader->getPath($letterFilename),
+                    'path' => $fileUploader->getPath(
+                        $letterFilename
+                    ),
+
+                    // Nom visible par le destinataire
                     'name' => 'lettre-de-motivation.pdf',
                 ];
+
             } elseif ($defaultLetter) {
+
                 if (!$fileUploader->exists($defaultLetter)) {
+
                     $this->addFlash(
                         'error',
                         'La lettre sélectionnée dans votre profil est introuvable.'
@@ -191,24 +288,29 @@ final class SpontaneousApplicationController extends AbstractController
                     );
                 }
 
+                $letterFilename = $defaultLetter;
+
                 $attachments[] = [
-                    'path' => $fileUploader->getPath($defaultLetter),
+                    'path' => $fileUploader->getPath(
+                        $defaultLetter
+                    ),
+
+                    // Nom visible par le destinataire
                     'name' => 'lettre-de-motivation.pdf',
                 ];
             }
 
             /**
-             * Envoi du mail
-             * Le EmailService utilise :
-             * From:
-             *  $user->getSenderEmail();
-             * Reply to :
-             *  $user->getEmail();
+             * =========================
+             * ENVOI DU MAIL
+             * =========================
              *
-             * @var Users $User
+             * From:
+             * $user->getSenderEmail()
+             *
+             * Reply-To:
+             * géré par EmailService
              */
-            $user = $this->getUser();
-
             $emailService->send(
                 user: $user,
                 to: $email,
@@ -224,28 +326,31 @@ final class SpontaneousApplicationController extends AbstractController
             );
 
             /**
-             * Stockage de la candidature
+             * =========================
+             * STOCKAGE DE LA CANDIDATURE
+             * =========================
              */
             $application
                 ->setProfils($profil)
                 ->setCompanies($company)
                 ->setStatus(true);
 
-            if ($uploadedCv) {
-                $application->setCvUsed($cvFilename);
-            } else {
-                $application->setCvUsed($defaultCv);
-            }
+            /**
+             * CV utilisé
+             */
+            $application->setCvUsed($cvFilename);
 
-            if ($uploadedLetter) {
-                $application->setLetterUsed($letterFilename);
-            } else {
-                $application->setLetterUsed($defaultLetter);
-            }
+            /**
+             * Lettre utilisée
+             */
+            $application->setLetterUsed($letterFilename);
 
             $entityManager->persist($application);
             $entityManager->flush();
 
+            /**
+             * Message de succès
+             */
             $this->addFlash(
                 'success',
                 'Votre candidature a bien été envoyée.'
