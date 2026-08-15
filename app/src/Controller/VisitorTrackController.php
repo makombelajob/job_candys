@@ -15,6 +15,8 @@ final class VisitorTrackController extends AbstractController
         VisitorTrackingService $visitorTrackingService,
         VisitorsRepository $visitorsRepository,
     ): Response {
+        
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $visitors = $visitorsRepository->findAllVisitors();
 
         return $this->render('visitor_track/index.html.twig', [
