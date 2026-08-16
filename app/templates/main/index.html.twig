@@ -3,6 +3,13 @@
 {% block title %}Candidature Spontanée | Accueil
 {% endblock %}
 
+{% block structured_data %}
+	{% include '_components/structured_data/_site.html.twig' with {
+        page_name: 'Candidature Spontanée | Job Candys',
+        page_description: 'Déposez votre candidature spontanée et présentez votre profil aux recruteurs sur Job Candys.'
+    } %}
+{% endblock %}
+
 {% block body %}
 
 	<main>

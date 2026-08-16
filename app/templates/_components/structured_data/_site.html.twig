@@ -1,0 +1,90 @@
+{#
+============================================================
+Job Candys - Schema.org / JSON-LD
+============================================================
+
+Entités décrites :
+- WebSite
+- Organization
+- WebPage
+
+Variables optionnelles :
+- page_name
+- page_description
+
+Le composant est volontairement limité aux informations
+actuellement certaines et pertinentes pour Job Candys.
+#}
+
+{% set site_url = 'https://job-candys.jobmakombela.fr/' %}
+{% set site_name = 'Job Candys' %}
+
+{# URL canonique de la page courante, sans query string #}
+{% set current_url = app.request.schemeAndHttpHost ~ app.request.pathInfo %}
+
+{# Identifiants uniques des entités du graphe #}
+{% set website_id = site_url ~ '#website' %}
+{% set organization_id = site_url ~ '#organization' %}
+{% set webpage_id = current_url ~ '#webpage' %}
+
+{# Informations par défaut de la page #}
+{% set default_page_name = site_name %}
+{% set default_page_description = 'Job Candys est une plateforme de mise en relation entre candidats et recruteurs. Les candidats peuvent présenter leur profil, leurs compétences et déposer des candidatures spontanées.' %}
+
+{% set current_page_name = page_name|default(default_page_name) %}
+{% set current_page_description = page_description|default(default_page_description) %}
+
+{#
+============================================================
+Graphe Schema.org
+============================================================
+#}
+
+{% set structured_data = {
+    '@context': 'https://schema.org',
+
+    '@graph': [
+
+        {
+            '@type': 'WebSite',
+            '@id': website_id,
+            'url': site_url,
+            'name': site_name,
+            'description': default_page_description,
+            'inLanguage': 'fr-FR',
+            'publisher': {
+            '@id': organization_id
+        }
+        },
+
+        {
+            '@type': 'Organization',
+            '@id': organization_id,
+            'name': site_name,
+            'url': site_url
+        },
+
+        {
+            '@type': 'WebPage',
+            '@id': webpage_id,
+            'url': current_url,
+            'name': current_page_name,
+            'description': current_page_description,
+            'isPartOf': {
+            '@id': website_id
+        },
+            'about': {
+            '@id': organization_id
+        },
+            'publisher': {
+            '@id': organization_id
+        },
+            'inLanguage': 'fr-FR'
+        }
+
+    ]
+} %}
+
+<script type="application/ld+json">
+{{ structured_data|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}
+</script>
