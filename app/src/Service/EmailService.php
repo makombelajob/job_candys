@@ -61,8 +61,9 @@ class EmailService
         $email = (new TemplatedEmail())
             ->from(new Address($senderEmail, $senderName))
             ->replyTo(new Address(
-                'reply@send.job-candys.jobmakombela.fr', 
-                $senderName))
+                'reply@send.job-candys.jobmakombela.fr',
+                $senderName
+            ))
             ->to($to)
             ->subject($subject)
             ->htmlTemplate("spontaneous_application/$template.html.twig")
@@ -74,6 +75,32 @@ class EmailService
                 $attachment['name'] ?? null
             );
         }
+
+        $this->mailer->send($email);
+    }
+
+    /**
+     * MODIFICATION :
+     * Envoie un email confirmant que l'inscription
+     * de l'utilisateur a bien été enregistrée.
+     *
+     * Aucun token et aucun lien de confirmation.
+     *
+     * @throws TransportExceptionInterface
+     */
+    public function sendRegistrationConfirmation(Users $user): void
+    {
+        $email = (new TemplatedEmail())
+            ->from(new Address(
+                'noreply@send.job-candys.jobmakombela.fr',
+                'Job-Candys'
+            ))
+            ->to($user->getEmail())
+            ->subject('Confirmation de votre inscription - Job-Candys')
+            ->htmlTemplate('emails/registration_confirmation.html.twig')
+            ->context([
+                'user' => $user,
+            ]);
 
         $this->mailer->send($email);
     }

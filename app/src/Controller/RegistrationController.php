@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EmailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,7 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         HunterEmailVerify $hunterEmailVerify,
         UserCreatorService $userCreator,
+        EmailService $emailService,
         ): Response
     {
         $user = new Users();
@@ -56,7 +58,11 @@ class RegistrationController extends AbstractController
 
                 $userCreator->create($user);
 
-                return $this->redirectToRoute('app_profiles');
+                $emailService->sendRegistrationConfirmation($user);
+
+                return $this->render('registration/confirmation.html.twig', [
+                    'user' => $user,
+                ]);
             }
         }
 
