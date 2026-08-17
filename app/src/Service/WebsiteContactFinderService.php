@@ -49,6 +49,7 @@ class WebsiteContactFinderService
     private const EXCLUDED_KEYWORDS = [
         'rgpd',
         'dpo',
+        'dpd',
         'privacy',
         'security',
         'vuln',
