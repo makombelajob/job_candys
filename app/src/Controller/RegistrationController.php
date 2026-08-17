@@ -41,6 +41,11 @@ class RegistrationController extends AbstractController
 
             if ($form->isValid()) {
 
+                /**
+                 * @var Users $user;
+                 */
+                $user->setIsVerified(true);
+                
                 /** @var string $plainPassword */
                 $plainPassword = $form->get('plainPassword')->getData();
 
