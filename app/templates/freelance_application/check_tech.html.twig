@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Technologies du site
+{% endblock %}
+
+{% block body %}
+
+	<div
+		class="container py-5">
+
+		{# En-tête #}
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+
+			<div>
+				<h1 class="h2 mb-1 fw-bold" style="color: var(--color-text);">
+					<i class="bi bi-cpu me-2" style="color: var(--color-primary);"></i>
+					Technologies détectées
+				</h1>
+
+				<p class="mb-0" style="color: var(--color-muted);">
+					Analyse technologique du site
+				</p>
+			</div>
+
+			{% if website is defined and website %}
+
+				<a href="{{ path('app_freelance_proposition', { 'siret': siret }) }}" rel="noopener noreferrer" class="btn mt-3 mt-md-0" style="background-color: var(--color-primary); border-color: var(--color-primary); color: var(--color-white);" title="Proposer" aria-label="Proposer">
+					<i class="bi bi-send me-2"></i>
+					Proposer
+				</a>
+
+
+			{% endif %}
+
+		</div>
+
+		{# Informations du site #}
+		<div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-surface); border-radius: var(--radius-lg);">
+
+			<div class="card-body">
+
+				<div class="row g-4">
+
+					<div class="col-md-8">
+
+						<div class="small mb-1" style="color: var(--color-muted);">
+							Site web
+						</div>
+
+						{% if website is defined and website %}
+
+							<a href="{{ website }}" target="_blank" rel="noopener noreferrer" class="fw-semibold text-decoration-none" style="color: var(--color-primary);">
+								<i class="bi bi-link-45deg me-1"></i>
+								{{ website }}
+							</a>
+
+						{% else %}
+
+							<span style="color: var(--color-muted);">
+								Aucun site disponible
+							</span>
+
+						{% endif %}
+
+					</div>
+
+					<div class="col-md-4">
+
+						<div class="small mb-1" style="color: var(--color-muted);">
+							Langue détectée
+						</div>
+
+						<span class="badge rounded-pill border" style="background-color: rgba(24, 187, 184, 0.10); border-color: rgba(24, 187, 184, 0.20) !important; color: var(--color-primary);">
+							<i class="bi bi-translate me-1"></i>
+							{{ analysis.language|default('Inconnue') }}
+						</span>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		{# Technologies détectées #}
+		{% if analysis.detected is defined and analysis.detected is not empty %}
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+
+				<div>
+
+					<h2 class="h4 mb-1 fw-bold" style="color: var(--color-text);">
+						<i class="bi bi-cpu me-2" style="color: var(--color-primary);"></i>
+						Technologies
+					</h2>
+
+					<p class="mb-0" style="color: var(--color-muted);">
+						Technologies identifiées sur le site
+					</p>
+
+				</div>
+
+				<span class="badge rounded-pill" style="background-color: var(--color-primary); color: var(--color-white);">
+					{{ analysis.detected|length }}
+				</span>
+
+			</div>
+
+			{# Correspondance des technologies avec leurs icônes #}
+			{% set technologyIcons = {
+				'WordPress': 'bi-wordpress',
+				'Elementor': 'bi-palette',
+				'jQuery': 'bi-filetype-js',
+				'jQuery UI': 'bi-layout-text-window-reverse',
+				'PHP': 'bi-filetype-php',
+				'MySQL': 'bi-database',
+				'Nginx': 'bi-server',
+				'Amazon CloudFront': 'bi-cloud',
+				'Amazon Web Services': 'bi-cloud-fill',
+				'Amazon ALB': 'bi-diagram-3',
+				'Google Tag Manager': 'bi-google',
+				'HSTS': 'bi-shield-check',
+				'HTTP/3': 'bi-globe',
+				'Slider Revolution': 'bi-images',
+				'WPML': 'bi-translate',
+				'Trusted Shops': 'bi-patch-check',
+				'CivicTheme': 'bi-building',
+				'Cart Functionality': 'bi-cart3',
+				'GSAP': 'bi-lightning-charge',
+				'RequireJS': 'bi-filetype-js',
+				'Vimeo': 'bi-play-btn',
+				'Google Font API': 'bi-fonts',
+				'PayU Payment': 'bi-credit-card',
+				'Magento': 'bi-bag-check',
+				'Bootstrap': 'bi-bootstrap',
+				'Cloudflare': 'bi-cloud-check',
+				'Matomo': 'bi-bar-chart',
+				'Google Analytics': 'bi-graph-up'
+			} %}
+
+			{# Liste des cartes technologiques #}
+			<div class="row g-4">
+
+				{% for technologyName, technologyData in analysis.detected %}
+
+					{% set icon = technologyIcons[technologyName]|default('bi-code-slash') %}
+
+					<div class="col-12 col-md-6 col-xl-4">
+
+						<div class="card h-100 border-0 shadow-sm" style="background-color: var(--color-surface); border-radius: var(--radius-lg);">
+
+							<div
+								class="card-body d-flex flex-column">
+
+								{# Nom et icône de la technologie #}
+								<div class="d-flex align-items-start">
+
+									<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px; background-color: rgba(24, 187, 184, 0.10); color: var(--color-primary);">
+										<i class="bi {{ icon }} fs-3"></i>
+									</div>
+
+									<div class="ms-3 flex-grow-1">
+
+										<h3 class="h5 fw-bold mb-2" style="color: var(--color-text);">
+											{{ technologyName }}
+										</h3>
+
+										{% if technologyData.cats is defined and technologyData.cats is not empty %}
+
+											<div class="d-flex flex-wrap gap-1">
+
+												{% for category in technologyData.cats %}
+
+													<span class="badge rounded-pill border" style="background-color: var(--color-bg-light); border-color: var(--color-border) !important; color: var(--color-muted);">
+														{{ category }}
+													</span>
+
+												{% endfor %}
+
+											</div>
+
+										{% endif %}
+
+									</div>
+
+								</div>
+
+								{# Description #}
+								{% if technologyData.description is defined and technologyData.description %}
+
+									<p class="small mt-3 mb-3" style="color: var(--color-muted); line-height: 1.6;">
+										{{ technologyData.description }}
+									</p>
+
+								{% endif %}
+
+								{# Actions #}
+								<div class="mt-auto pt-3">
+
+									<div
+										class="d-flex align-items-center gap-2">
+
+										{# Site officiel de la technologie #}
+										{% if technologyData.website is defined and technologyData.website %}
+
+											<a href="{{ technologyData.website }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm d-inline-flex align-items-center justify-content-center" title="Site officiel de {{ technologyName }}" aria-label="Site officiel de {{ technologyName }}" style="color: var(--color-primary); border: 1px solid var(--color-primary);">
+												<i class="bi bi-box-arrow-up-right"></i>
+											</a>
+
+										{% endif %}
+
+										{# Liens spécifiques à WordPress #}
+										{% if technologyName == 'WordPress' and website is defined and website %}
+
+											<a href="{{ website|trim('/') }}/readme.html" target="_blank" rel="noopener noreferrer" class="btn btn-sm d-inline-flex align-items-center justify-content-center" title="WordPress readme.html" aria-label="WordPress readme.html" style="color: var(--color-muted); background-color: var(--color-bg-light); border: 1px solid var(--color-border);">
+												<i class="bi bi-file-earmark-text"></i>
+											</a>
+
+											<a href="{{ website|trim('/') }}/wp-login.php" target="_blank" rel="noopener noreferrer" class="btn btn-sm d-inline-flex align-items-center justify-content-center" title="WordPress wp-login.php" aria-label="WordPress wp-login.php" style="color: var(--color-muted); background-color: var(--color-bg-light); border: 1px solid var(--color-border);">
+												<i class="bi bi-box-arrow-in-right"></i>
+											</a>
+
+										{% endif %}
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				{% endfor %}
+
+			</div>
+
+		{% else %}
+
+			{# Aucune technologie détectée #}
+			<div class="alert border" style="background-color: rgba(24, 187, 184, 0.08); border-color: rgba(24, 187, 184, 0.20) !important; color: var(--color-primary);">
+
+				<i class="bi bi-info-circle me-2"></i>
+
+				<strong>Aucune technologie détectée.</strong>
+
+				<span class="ms-1">
+					Wappalyzer n'a identifié aucune technologie sur ce site.
+				</span>
+
+			</div>
+
+		{% endif %}
+
+	</div>
+
+{% endblock %}

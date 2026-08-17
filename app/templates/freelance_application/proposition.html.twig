@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proposition commerciale
+{% endblock %}
+
+{% block body %}
+
+	<div class="container py-5">
+
+		<div class="row justify-content-center">
+
+			<div class="col-12 col-lg-8 col-xl-7">
+
+				<div class="mb-4">
+
+					<h1 class="h2 fw-bold mb-2">
+						<i class="bi bi-send me-2" style="color: var(--color-primary);"></i>
+						Proposition commerciale
+					</h1>
+
+					<p class="text-muted mb-0">
+						Préparez votre proposition à destination de l'entreprise.
+					</p>
+
+				</div>
+
+				{{ include('_components/_flash_message.html.twig') }}
+
+				<div class="card border-0 shadow-sm">
+
+					<div class="card-body p-4 p-md-5">
+
+						<div class="mb-4">
+
+							<div class="small text-muted mb-1">
+								Entreprise
+							</div>
+
+							<div class="fw-semibold">
+								<i class="bi bi-building me-2"></i>
+								Entreprise identifiée
+							</div>
+
+							<div class="small text-muted mt-1">
+								<i class="bi bi-hash me-1"></i>
+								SIRET :
+								{{ siret }}
+							</div>
+
+						</div>
+
+						<hr class="mb-4">
+
+						{{ form_start(form) }}
+
+						<div class="mb-3">
+
+							{{ form_label(form.email, 'Destinataire', {
+								'label_attr': {
+									'class': 'form-label fw-semibold'
+								}
+							}) }}
+
+							{{ form_widget(form.email, {
+								'attr': {
+									'class': 'form-select'
+								}
+							}) }}
+
+							{{ form_errors(form.email) }}
+
+							<div class="form-text">
+								Sélectionnez le contact auquel vous souhaitez envoyer votre proposition.
+							</div>
+
+						</div>
+
+						<div class="mb-3">
+
+							{{ form_label(form.subject, 'Sujet', {
+								'label_attr': {
+									'class': 'form-label fw-semibold'
+								}
+							}) }}
+
+							{{ form_widget(form.subject, {
+								'attr': {
+									'class': 'form-control',
+									'placeholder': 'Sujet de votre proposition'
+								}
+							}) }}
+
+							{{ form_errors(form.subject) }}
+
+						</div>
+
+						<div class="mb-4">
+
+							{{ form_label(form.message, 'Message', {
+								'label_attr': {
+									'class': 'form-label fw-semibold'
+								}
+							}) }}
+
+							{{ form_widget(form.message, {
+								'attr': {
+									'class': 'form-control',
+									'rows': 10,
+									'placeholder': 'Rédigez votre proposition...'
+								}
+							}) }}
+
+							{{ form_errors(form.message) }}
+
+						</div>
+
+						<div class="d-flex flex-column flex-sm-row justify-content-between gap-2">
+
+							<a href="{{ path('app_freelance_check_tech', { 'siret': siret }) }}" class="btn btn-outline-secondary">
+								<i class="bi bi-arrow-left me-2"></i>
+								Retour
+							</a>
+
+							<button type="submit" class="btn" style="background-color: var(--color-primary); border-color: var(--color-primary); color: var(--color-white);">
+								<i class="bi bi-send me-2"></i>
+								Envoyer
+							</button>
+
+						</div>
+
+						{{ form_end(form) }}
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+{% endblock %}

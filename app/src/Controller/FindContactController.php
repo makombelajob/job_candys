@@ -333,6 +333,21 @@ final class FindContactController extends AbstractController
 
             $this->entityManager->flush();
 
+            if ($this->isGranted('ROLE_FREELANCE')) {
+                return $this->redirectToRoute(
+                    'app_find_web',
+                    [
+                        'siret' => $company->getSiret(),
+                    ]
+                );
+            }
+
+            return $this->redirectToRoute(
+                'app_spontaneous_application_send',
+                [
+                    'siret' => $company->getSiret(),
+                ]
+            );
 
             /*
              * Message de confirmation
