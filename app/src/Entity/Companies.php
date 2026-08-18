@@ -67,6 +67,14 @@ class Companies
     #[ORM\OneToMany(targetEntity: CompanyContacts::class, mappedBy: 'company')]
     private Collection $companyContacts;
 
+    /**
+     * @var Collection<int, FreelancePropositions>
+     */
+    #[ORM\OneToMany(targetEntity: FreelancePropositions::class, mappedBy: 'companies')]
+    private Collection $freelancePropositions;
+
+ 
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -75,6 +83,7 @@ class Companies
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->companyContacts = new ArrayCollection();
+        $this->freelancePropositions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -300,5 +309,36 @@ class Companies
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, FreelancePropositions>
+     */
+    public function getFreelancePropositions(): Collection
+    {
+        return $this->freelancePropositions;
+    }
+
+    public function addFreelanceProposition(FreelancePropositions $freelanceProposition): static
+    {
+        if (!$this->freelancePropositions->contains($freelanceProposition)) {
+            $this->freelancePropositions->add($freelanceProposition);
+            $freelanceProposition->setCompanies($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFreelanceProposition(FreelancePropositions $freelanceProposition): static
+    {
+        if ($this->freelancePropositions->removeElement($freelanceProposition)) {
+            // set the owning side to null (unless already changed)
+            if ($freelanceProposition->getCompanies() === $this) {
+                $freelanceProposition->setCompanies(null);
+            }
+        }
+
+        return $this;
+    }
+
 
 }

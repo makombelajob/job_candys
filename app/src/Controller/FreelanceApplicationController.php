@@ -2,19 +2,21 @@
 
 namespace App\Controller;
 
-use App\Entity\CompanyContacts;
 use App\Form\FreelancePropositionType;
+use App\Entity\FreelancePropositions;
 use App\Form\SearchCompanyType;
 use App\Repository\CompaniesRepository;
 use App\Repository\CompanyContactsRepository;
-use App\Service\CompanyTechnologyService;
 use App\Service\InseeApiService;
 use App\Service\WappalyzerService;
+use App\Service\EmailService;
+use App\Entity\Users;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\FreelancePropositionsRepository;
 
 final class FreelanceApplicationController extends AbstractController
 {
@@ -26,7 +28,7 @@ final class FreelanceApplicationController extends AbstractController
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_FREELANCE');
 
-        /** @var \App\Entity\Users $user */
+        /** @var Users $user */
         $user = $this->getUser();
 
         $form = $this->createForm(SearchCompanyType::class);
@@ -40,7 +42,6 @@ final class FreelanceApplicationController extends AbstractController
             $motRecherche = $form->get('mot')->getData();
 
             if (!empty($motRecherche)) {
-
                 $resultats = $inseeApiService->searchEntreprise(
                     $motRecherche
                 );
@@ -66,7 +67,9 @@ final class FreelanceApplicationController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_FREELANCE');
 
         if (!$siret) {
-            throw $this->createNotFoundException('SIRET manquant.');
+            throw $this->createNotFoundException(
+                'SIRET manquant.'
+            );
         }
 
         $company = $companiesRepository->findOneBy([
@@ -74,7 +77,9 @@ final class FreelanceApplicationController extends AbstractController
         ]);
 
         if (!$company) {
-            throw $this->createNotFoundException('Entreprise introuvable.');
+            throw $this->createNotFoundException(
+                'Entreprise introuvable.'
+            );
         }
 
         $website = $company->getWebsite();
@@ -104,10 +109,44 @@ final class FreelanceApplicationController extends AbstractController
         Request $request,
         CompaniesRepository $companiesRepository,
         CompanyContactsRepository $companyContactsRepository,
+        FreelancePropositionsRepository $freelancePropositionsRepository,
+        EmailService $emailService,
+        EntityManagerInterface $entityManager,
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_FREELANCE');
 
-        // Recherche de l'entreprise
+        /**
+         * =========================
+         * UTILISATEUR CONNECTÉ
+         * =========================
+         *
+         * @var Users $user
+         */
+        $user = $this->getUser();
+
+        /**
+         * =========================
+         * PROFIL
+         * =========================
+         */
+        $profil = $user->getProfils();
+
+        if (!$profil) {
+            $this->addFlash(
+                'error',
+                'Votre profil est introuvable.'
+            );
+
+            return $this->redirectToRoute(
+                'app_freelance_application'
+            );
+        }
+
+        /**
+         * =========================
+         * RECHERCHE DE L'ENTREPRISE
+         * =========================
+         */
         $company = $companiesRepository->findOneBy([
             'siret' => $siret,
         ]);
@@ -118,12 +157,46 @@ final class FreelanceApplicationController extends AbstractController
             );
         }
 
-        // Récupération des contacts
+        /**
+         * =========================
+         * VÉRIFICATION DOUBLON
+         * =========================
+         *
+         * Un même profil ne peut pas
+         * envoyer plusieurs propositions
+         * à la même entreprise.
+         */
+        if (
+            $freelancePropositionsRepository
+                ->hasProposalForProfileAndCompany(
+                    $profil,
+                    $company
+                )
+        ) {
+            $this->addFlash(
+                'error',
+                'Vous avez déjà envoyé une proposition à cette entreprise.'
+            );
+
+            return $this->redirectToRoute(
+                'app_freelance_application'
+            );
+        }
+
+        /**
+         * =========================
+         * RÉCUPÉRATION DES CONTACTS
+         * =========================
+         */
         $contacts = $companyContactsRepository->findBy([
             'company' => $company,
         ]);
 
-        // Préparation des choix d'emails
+        /**
+         * =========================
+         * PRÉPARATION DES CHOIX
+         * =========================
+         */
         $contactChoices = [];
 
         foreach ($contacts as $contact) {
@@ -137,8 +210,12 @@ final class FreelanceApplicationController extends AbstractController
             }
         }
 
-        // Création du formulaire
-        $form = $this->createForm(
+        /**
+         * =========================
+         * CRÉATION DU FORMULAIRE
+         * =========================
+         */
+        $freelanceForm = $this->createForm(
             FreelancePropositionType::class,
             [
                 'siret' => $company->getSiret(),
@@ -148,36 +225,139 @@ final class FreelanceApplicationController extends AbstractController
             ]
         );
 
-        $form->handleRequest($request);
+        $freelanceForm->handleRequest($request);
 
-        // Traitement du formulaire
-        if ($form->isSubmitted() && $form->isValid()) {
+        /**
+         * =========================
+         * TRAITEMENT DU FORMULAIRE
+         * =========================
+         */
+        if (
+            $freelanceForm->isSubmitted()
+            && $freelanceForm->isValid()
+        ) {
 
-            $data = $form->getData();
+            $data = $freelanceForm->getData();
 
-            $email = $data['email'];
-            $subject = $data['subject'];
-            $message = $data['message'];
+            $email = trim(
+                (string) $data['email']
+            );
 
-            // Le traitement d'envoi sera ajouté ici.
+            $subject = trim(
+                (string) $data['subject']
+            );
 
+            $message = (string) $data['message'];
+
+            /**
+             * =========================
+             * VÉRIFICATION EMAIL
+             * =========================
+             */
+            if ($email === '') {
+                $this->addFlash(
+                    'error',
+                    'L’adresse email du destinataire est obligatoire.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_freelance_proposition',
+                    [
+                        'siret' => $siret,
+                    ]
+                );
+            }
+
+            /**
+             * =========================
+             * NOUVELLE VÉRIFICATION
+             * =========================
+             *
+             * On vérifie à nouveau juste
+             * avant l'envoi afin d'éviter
+             * un doublon si deux requêtes
+             * arrivent presque simultanément.
+             */
+            if (
+                $freelancePropositionsRepository
+                    ->hasProposalForProfileAndCompany(
+                        $profil,
+                        $company
+                    )
+            ) {
+                $this->addFlash(
+                    'error',
+                    'Vous avez déjà envoyé une proposition à cette entreprise.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_freelance_application'
+                );
+            }
+
+            /**
+             * =========================
+             * ENVOI DU MAIL
+             * =========================
+             */
+            $messageId = $emailService->send(
+                user: $user,
+                to: $email,
+                subject: $subject,
+                template: 'freelance_application/email.html.twig',
+                context: [
+                    'message' => $message,
+                    'company' => $company,
+                    'siret' => $siret,
+                    'subject' => $subject,
+                    'recipientEmail' => $email,
+                ]
+            );
+
+            /**
+             * =========================
+             * STOCKAGE
+             * =========================
+             */
+            $proposition = new FreelancePropositions();
+
+            $proposition
+                ->setProfils($profil)
+                ->setCompanies($company)
+                ->setRecipientEmail($email)
+                ->setSubject($subject)
+                ->setMessage($message)
+                ->setMessageId($messageId)
+                ->setStatus(true)
+                ->setSentAt(new \DateTimeImmutable());
+
+            $entityManager->persist($proposition);
+            $entityManager->flush();
+
+            /**
+             * =========================
+             * SUCCÈS
+             * =========================
+             */
             $this->addFlash(
                 'success',
-                'La proposition a été préparée avec succès.'
+                'Votre proposition a bien été envoyée.'
             );
 
             return $this->redirectToRoute(
-                'app_freelance_proposition',
-                [
-                    'siret' => $company->getSiret(),
-                ]
+                'app_freelance_application'
             );
         }
 
+        /**
+         * =========================
+         * AFFICHAGE DU FORMULAIRE
+         * =========================
+         */
         return $this->render(
             'freelance_application/proposition.html.twig',
             [
-                'form' => $form->createView(),
+                'freelanceForm' => $freelanceForm->createView(),
                 'company' => $company,
                 'siret' => $company->getSiret(),
             ]

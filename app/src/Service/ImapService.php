@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Webklex\PHPIMAP\ClientManager;
 use App\Entity\Users;
+use App\Repository\ApplicationsRepository;
 
 class ImapService
 {
@@ -15,6 +16,7 @@ class ImapService
         private readonly string $imapEncryption,
         private readonly string $imapUsername,
         private readonly string $imapPassword,
+        private readonly ApplicationsRepository $applicationsRepository,
     ) {
         $this->clientManager = new ClientManager();
     }
@@ -48,6 +50,30 @@ class ImapService
 
     public function getMessagesForView(Users $user): array
     {
+        $profil = $user->getProfils();
+
+        if (!$profil) {
+            return [];
+        }
+
+        $applications = $this->applicationsRepository->findBy([
+            'profils' => $profil,
+        ]);
+
+        $messageIds = [];
+
+        foreach ($applications as $application) {
+            $messageId = $application->getMessageId();
+
+            if ($messageId) {
+                $messageIds[] = trim($messageId, '<>');
+            }
+        }
+
+        if (!$messageIds) {
+            return [];
+        }
+
         $messages = $this->getMessages();
 
         $result = [];
@@ -55,17 +81,20 @@ class ImapService
         foreach ($messages as $message) {
             $from = (string) $message->getFrom();
 
-            // Ignorer les messages techniques de cPanel
             if (str_contains(strtolower($from), 'cpanel@')) {
                 continue;
             }
 
-            /**
-             *  Verifier si l'utilisateur a bel bien des messages
-             */
-            $to = (string) $message->getTo();
-            $userEmail = strtolower((string) $user->getEmail());
-            if(!str_contains(strtolower($to), $userEmail)){
+            $inReplyTo = trim(
+                (string) $message->getInReplyTo(),
+                '<>'
+            );
+
+            if (!$inReplyTo) {
+                continue;
+            }
+
+            if (!in_array($inReplyTo, $messageIds, true)) {
                 continue;
             }
 

@@ -29,11 +29,6 @@
 
 				{% endif %}
 
-
-				{# =====================================================
-												                   CONTACTS TROUVÉS
-												                   ===================================================== #}
-
 				{% if emails is defined and emails %}
 
 					<div class="info">
@@ -55,10 +50,6 @@
 					</div>
 
 
-					{# =====================================================
-															                   AUCUN CONTACT
-															                   ===================================================== #}
-
 				{% elseif emails is defined and emails is null and not errorMessage %}
 
 					<div class="info">
@@ -69,18 +60,13 @@
 
 			</div>
 
-
-			{# =========================================================
-									               ACTIONS FREELANCE
-									               ========================================================= #}
-
 			{% if is_granted('ROLE_FREELANCE') %}
 
 				<div class="actions">
 
 					{% if hasContacts %}
 
-						<a href="#" id="trouver-contact" class="btn primary">
+						<a href="{{ path('app_freelance_proposition', { 'siret': company.siret }) }}" id="trouver-contact" class="btn primary">
 							Proposition
 						</a>
 

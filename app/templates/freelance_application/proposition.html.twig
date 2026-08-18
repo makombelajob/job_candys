@@ -51,23 +51,23 @@
 
 						<hr class="mb-4">
 
-						{{ form_start(form) }}
+						{{ form_start(freelanceForm) }}
 
 						<div class="mb-3">
 
-							{{ form_label(form.email, 'Destinataire', {
+							{{ form_label(freelanceForm.email, 'Destinataire', {
 								'label_attr': {
 									'class': 'form-label fw-semibold'
 								}
 							}) }}
 
-							{{ form_widget(form.email, {
+							{{ form_widget(freelanceForm.email, {
 								'attr': {
 									'class': 'form-select'
 								}
 							}) }}
 
-							{{ form_errors(form.email) }}
+							{{ form_errors(freelanceForm.email) }}
 
 							<div class="form-text">
 								Sélectionnez le contact auquel vous souhaitez envoyer votre proposition.
@@ -77,32 +77,32 @@
 
 						<div class="mb-3">
 
-							{{ form_label(form.subject, 'Sujet', {
+							{{ form_label(freelanceForm.subject, 'Sujet', {
 								'label_attr': {
 									'class': 'form-label fw-semibold'
 								}
 							}) }}
 
-							{{ form_widget(form.subject, {
+							{{ form_widget(freelanceForm.subject, {
 								'attr': {
 									'class': 'form-control',
 									'placeholder': 'Sujet de votre proposition'
 								}
 							}) }}
 
-							{{ form_errors(form.subject) }}
+							{{ form_errors(freelanceForm.subject) }}
 
 						</div>
 
 						<div class="mb-4">
 
-							{{ form_label(form.message, 'Message', {
+							{{ form_label(freelanceForm.message, 'Message', {
 								'label_attr': {
 									'class': 'form-label fw-semibold'
 								}
 							}) }}
 
-							{{ form_widget(form.message, {
+							{{ form_widget(freelanceForm.message, {
 								'attr': {
 									'class': 'form-control',
 									'rows': 10,
@@ -110,7 +110,7 @@
 								}
 							}) }}
 
-							{{ form_errors(form.message) }}
+							{{ form_errors(freelanceForm.message) }}
 
 						</div>
 
@@ -128,7 +128,7 @@
 
 						</div>
 
-						{{ form_end(form) }}
+						{{ form_end(freelanceForm) }}
 
 					</div>
 

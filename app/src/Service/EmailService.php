@@ -34,7 +34,7 @@ class EmailService
         string $template,
         array $context = [],
         array $attachments = []
-    ): void {
+    ): string {
         $senderEmail = $user->getSenderEmail();
         $personalEmail = $user->getEmail();
 
@@ -59,6 +59,7 @@ class EmailService
         );
 
         $profil = $user->getProfils();
+
         $context['user'] = $user;
         $context['profil'] = $profil;
         $context['linkedin'] = $profil?->getLinkedin();
@@ -71,7 +72,7 @@ class EmailService
             ))
             ->to($to)
             ->subject($subject)
-            ->htmlTemplate("spontaneous_application/$template.html.twig")
+            ->htmlTemplate($template)
             ->context($context);
 
         foreach ($attachments as $attachment) {
@@ -81,7 +82,17 @@ class EmailService
             );
         }
 
+        $messageId = bin2hex(random_bytes(16))
+            . '@send.job-candys.jobmakombela.fr';
+
+        $email->getHeaders()->addIdHeader(
+            'Message-ID',
+            $messageId
+        );
+
         $this->mailer->send($email);
+
+        return $messageId;
     }
 
     /**

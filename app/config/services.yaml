@@ -46,8 +46,8 @@ services:
 
     App\Service\ImapService:
         arguments:
-            $imapHost: '%imap.host%'
-            $imapPort: '%imap.port%'
-            $imapEncryption: '%imap.encryption%'
-            $imapUsername: '%imap.username%'
-            $imapPassword: '%imap.password%'
+            $imapHost: '%env(REPLY_IMAP_HOST)%'
+            $imapPort: '%env(int:REPLY_IMAP_PORT)%'
+            $imapEncryption: '%env(REPLY_IMAP_ENCRYPTION)%'
+            $imapUsername: '%env(REPLY_IMAP_USERNAME)%'
+            $imapPassword: '%env(REPLY_IMAP_PASSWORD)%'

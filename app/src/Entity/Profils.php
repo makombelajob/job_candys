@@ -59,6 +59,12 @@ class Profils
      */
     #[ORM\OneToMany(targetEntity: ContactsAdmin::class, mappedBy: 'profils')]
     private Collection $contactsAdmin;
+
+    /**
+     * @var Collection<int, FreelancePropositions>
+     */
+    #[ORM\OneToMany(targetEntity: FreelancePropositions::class, mappedBy: 'profils')]
+    private Collection $freelancePropositions;
     
     public function __construct()
     {
@@ -67,6 +73,7 @@ class Profils
         $this->contactsAdmin = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->freelancePropositions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,6 +283,36 @@ class Profils
             // set the owning side to null (unless already changed)
             if ($contactsAdmin->getProfils() === $this) {
                 $contactsAdmin->setProfils(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FreelancePropositions>
+     */
+    public function getFreelancePropositions(): Collection
+    {
+        return $this->freelancePropositions;
+    }
+
+    public function addFreelanceProposition(FreelancePropositions $freelanceProposition): static
+    {
+        if (!$this->freelancePropositions->contains($freelanceProposition)) {
+            $this->freelancePropositions->add($freelanceProposition);
+            $freelanceProposition->setProfils($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFreelanceProposition(FreelancePropositions $freelanceProposition): static
+    {
+        if ($this->freelancePropositions->removeElement($freelanceProposition)) {
+            // set the owning side to null (unless already changed)
+            if ($freelanceProposition->getProfils() === $this) {
+                $freelanceProposition->setProfils(null);
             }
         }
 

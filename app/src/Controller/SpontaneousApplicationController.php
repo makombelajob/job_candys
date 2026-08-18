@@ -311,16 +311,15 @@ final class SpontaneousApplicationController extends AbstractController
              * Reply-To:
              * géré par EmailService
              */
-            $emailService->send(
+            $messageId = $emailService->send(
                 user: $user,
                 to: $email,
                 subject: 'Candidature spontanée',
-                template: 'email',
+                template: 'spontaneous_application/email.html.twig',
                 context: [
                     'message' => $message,
                     'company' => $company,
                     'contact' => $contact,
-                    'user' => $user,
                 ],
                 attachments: $attachments
             );
@@ -333,7 +332,9 @@ final class SpontaneousApplicationController extends AbstractController
             $application
                 ->setProfils($profil)
                 ->setCompanies($company)
-                ->setStatus(true);
+                ->setStatus(true)
+                ->setMessageId($messageId)
+            ;
 
             /**
              * CV utilisé
