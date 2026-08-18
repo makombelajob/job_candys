@@ -9,10 +9,28 @@
 		<p>
 			{{ message|nl2br }}
 		</p>
+
 		<p>
 			{{ user.firstname ?? '' }}
 			{{ user.lastname ?? '' }}
 		</p>
 
+		{% if profil.linkedin %}
+			<p>
+				LinkedIn :
+				<a href="{{ profil.linkedin }}" target="_blank" rel="noopener noreferrer">
+					{{ profil.linkedin }}
+				</a>
+			</p>
+		{% endif %}
+
+		{% if profil.website %}
+			<p>
+				Site web :
+				<a href="{{ profil.website }}" target="_blank" rel="noopener noreferrer">
+					{{ profil.website }}
+				</a>
+			</p>
+		{% endif %}
 	</body>
 </html>

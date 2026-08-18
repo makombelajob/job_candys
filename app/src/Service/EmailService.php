@@ -58,6 +58,11 @@ class EmailService
             )
         );
 
+        $profil = $user->getProfils();
+        $context['user'] = $user;
+        $context['profil'] = $profil;
+        $context['linkedin'] = $profil?->getLinkedin();
+
         $email = (new TemplatedEmail())
             ->from(new Address($senderEmail, $senderName))
             ->replyTo(new Address(

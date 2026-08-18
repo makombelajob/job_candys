@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ApplicationsRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApplicationsRepository::class)]
@@ -30,6 +31,9 @@ class Applications
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     private ?Companies $companies = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $messageId = null;
 
     public function __construct()
     {
@@ -108,6 +112,18 @@ class Applications
     public function setCompanies(?Companies $companies): static
     {
         $this->companies = $companies;
+
+        return $this;
+    }
+
+    public function getMessageId(): ?string
+    {
+        return $this->messageId;
+    }
+
+    public function setMessageId(?string $messageId): static
+    {
+        $this->messageId = $messageId;
 
         return $this;
     }
