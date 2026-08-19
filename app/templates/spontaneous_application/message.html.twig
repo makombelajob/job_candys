@@ -3,67 +3,114 @@
 {% block title %}Messages
 {% endblock %}
 
-{% block stylesheets %}
-	{{ parent() }}
-	<link rel="stylesheet" href="{{ asset('css/spontaneous-application.css') }}">
-{% endblock %}
-
 {% block body %}
 
-	<div class="messages-page">
+	<div class="container py-4">
 
-		<div class="messages-wrapper">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1 class="h2 mb-0">Messages</h1>
+		</div>
 
-			<div class="messages-header">
-				<h1>Messages</h1>
+		{% if messages %}
+
+			<div class="list-group">
+
+				{% for message in messages %}
+
+					{% set content = message.text|split('De :')|first %}
+					{% set preview = content|striptags|trim %}
+
+					<button type="button" class="list-group-item list-group-item-action text-start p-4" data-bs-toggle="modal" data-bs-target="#messageModal{{ loop.index }}">
+
+						<div class="d-flex justify-content-between align-items-start mb-2">
+
+							<div class="fw-bold">
+								{{ message.from }}
+							</div>
+
+							<small class="text-body-secondary">
+								{{ message.date|date('d/m/Y H:i') }}
+							</small>
+
+						</div>
+
+						<div class="fw-semibold mb-2">
+							{{ message.subject }}
+						</div>
+
+						<div class="text-body-secondary text-truncate">
+							{{ preview }}
+						</div>
+
+					</button>
+
+					{# Modal du message #}
+					<div class="modal fade" id="messageModal{{ loop.index }}" tabindex="-1" aria-labelledby="messageModalLabel{{ loop.index }}" aria-hidden="true">
+
+						<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+							<div class="modal-content">
+
+								<div class="modal-header">
+
+									<div>
+										<h2 class="modal-title fs-5 mb-1" id="messageModalLabel{{ loop.index }}">
+											{{ message.subject }}
+										</h2>
+
+										<div class="small text-body-secondary">
+											De :
+											<span class="fw-semibold">
+												{{ message.from }}
+											</span>
+
+											<span class="mx-1">·</span>
+
+											{{ message.date|date('d/m/Y H:i') }}
+										</div>
+									</div>
+
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+
+								</div>
+
+								<div class="modal-body">
+
+									<div class="lh-lg">
+										{{ content|replace({
+        									"\n> ": "\n",
+        									"\n>": "\n"
+    									})|nl2br }}
+									</div>
+
+
+								</div>
+
+								<div class="modal-footer">
+
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+										Fermer
+									</button>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				{% endfor %}
+
 			</div>
 
-			{% if messages %}
+		{% else %}
 
-				<div class="message-list">
+			<div class="alert alert-secondary text-center" role="alert">
+				Aucun message reçu.
+			</div>
 
-					{% for message in messages %}
-
-						{% set content = message.text|split('De :')|first %}
-						{% set preview = content|striptags|trim %}
-
-						<article class="message-item">
-
-							<div class="message-header">
-
-								<div class="message-from">
-									{{ message.from }}
-								</div>
-
-								<div class="message-date">
-									{{ message.date|date('d/m/Y H:i') }}
-								</div>
-
-							</div>
-
-							<div class="message-subject">
-								{{ message.subject }}
-							</div>
-
-							<div class="message-preview">
-								{{ preview }}
-							</div>
-
-						</article>
-
-					{% endfor %}
-
-				</div>
-
-			{% else %}
-
-				<div class="messages-empty">
-					<p>Aucun message reçu.</p>
-				</div>
-
-			{% endif %}
-
-		</div>
+		{% endif %}
 
 	</div>
 
