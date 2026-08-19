@@ -135,11 +135,12 @@ class ApplicationType extends AbstractType
                 'attr' => [
                     'rows' => 5,
                 ],
-                'data' => "Bonjour, 
-Je me permets de vous contacter afin de vous proposer ma candidature spontanée au sein de votre entreprise. 
-Vous trouverez mon CV ainsi que ma lettre de motivation en pièces jointes. 
-Je reste à votre disposition pour échanger avec vous et vous présenter plus en détail mon parcours. 
-Cordialement
+                'data' => "Bonjour,
+Admis en BTS SIO – option SISR à YNOV Campus pour la rentrée 2026/2027, je suis à la recherche d’une alternance dans le domaine de l’administration systèmes et réseaux.
+Je me permets donc de vous adresser ma candidature spontanée. Vous trouverez en pièces jointes mon CV ainsi que ma lettre de motivation.
+Je reste à votre disposition pour échanger avec vous.
+Cordialement,
+
                 ",
             ]);
     }
