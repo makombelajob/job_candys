@@ -6,6 +6,7 @@ use App\Form\FreelancePropositionType;
 use App\Entity\FreelancePropositions;
 use App\Form\SearchCompanyType;
 use App\Repository\CompaniesRepository;
+use App\Repository\FreelancePropositionsRepository;
 use App\Repository\CompanyContactsRepository;
 use App\Service\InseeApiService;
 use App\Service\WappalyzerService;
@@ -16,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\FreelancePropositionsRepository;
 
 final class FreelanceApplicationController extends AbstractController
 {
@@ -123,6 +123,7 @@ final class FreelanceApplicationController extends AbstractController
          * @var Users $user
          */
         $user = $this->getUser();
+        $profil = $user->getProfils();
 
         /**
          * =========================
@@ -215,8 +216,7 @@ final class FreelanceApplicationController extends AbstractController
          * CRÉATION DU FORMULAIRE
          * =========================
          */
-        $freelanceForm = $this->createForm(
-            FreelancePropositionType::class,
+        $freelanceForm = $this->createForm( FreelancePropositionType::class,
             [
                 'siret' => $company->getSiret(),
             ],
@@ -354,13 +354,39 @@ final class FreelanceApplicationController extends AbstractController
          * AFFICHAGE DU FORMULAIRE
          * =========================
          */
+
         return $this->render(
             'freelance_application/proposition.html.twig',
             [
                 'freelanceForm' => $freelanceForm->createView(),
                 'company' => $company,
                 'siret' => $company->getSiret(),
+                'user' => $this->getUser(),
+                'profil' => $profil,
             ]
+        );
+    }
+
+    #[ROUTE('/freelance_propostion', name: 'app_freelance_proposition_list')]
+    public function propositionSend(
+        FreelancePropositionsRepository $freelancePropositionsRepository,
+    ): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_FREELANCE');
+
+        $user = $this->getUser();
+        $profil = $user->getProfils();
+
+        $propostions = [];
+
+        if($profil){
+            $propositions = $freelancePropositionsRepository->findBy(
+                ['profils' => $profil],
+                ['sentAt' => 'DESC'],
+            );
+        }
+        return $this->render('freelance_application/proposition_list.html.twig',
+            ['propositions' => $propositions]
         );
     }
 }

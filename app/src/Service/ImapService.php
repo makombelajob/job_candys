@@ -108,6 +108,9 @@ class ImapService
                 'html' => (string) $message->getHTMLBody(),
             ];
         }
+        usort($result, function ($a, $b){
+            return $b['date'] <=> $a['date'];
+        });
 
         return $result;
     }

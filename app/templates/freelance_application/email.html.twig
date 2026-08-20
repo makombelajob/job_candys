@@ -32,7 +32,7 @@
 								{{ message|nl2br }}
 							</div>
 
-							<hr>
+							<hr class="my-4">
 
 							<div class="mt-4">
 
@@ -47,8 +47,22 @@
 
 								{% if profil and profil.linkedin %}
 									<p class="mb-0">
-										<a href="{{ profil.linkedin }}">
-											LinkedIn
+										<strong>Linkedin :
+										</strong>
+										<a href="{{ profil.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-decoratio-none">
+
+											{{ profil.linkedin }}
+										</a>
+									</p>
+								{% endif %}
+
+								{% if profil and profil.website %}
+									<p class="mb-0">
+										<strong>Website :
+										</strong>
+										<a href="{{ profil.website }}" target="_blank" rel="noopener noreferrer" class="text-decoratio-none">
+
+											{{ profil.website }}
 										</a>
 									</p>
 								{% endif %}

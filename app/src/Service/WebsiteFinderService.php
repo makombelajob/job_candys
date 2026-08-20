@@ -16,6 +16,7 @@ class WebsiteFinderService
         '.bzh',
         '.ma',
         '.aero',
+        '.io',
     ];
 
     private const TIMEOUT = 10;

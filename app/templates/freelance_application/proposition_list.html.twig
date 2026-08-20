@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Propositions
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/spontaneous-application.css') }}">
+{% endblock %}
+
+{% block body %}
+	<main class="sa-page">
+		<section class="sa-card">
+			<div class="sa-card__header">
+				<div>
+					<p class="sa-card__eyebrow">Suivi de mes propositions</p>
+					<h1>Mes Propositions</h1>
+				</div>
+				<span class="sa-pill">
+					{{ propositions|length }}
+					proposition
+					{% if propositions|length > 1 %}s
+					{% endif %}
+				</span>
+			</div>
+
+			{% if propositions is empty %}
+				<div class="sa-empty">
+					<p>Vous n'avez envoyé aucune proposition envoyée pour le moment.</p>
+				</div>
+			{% else %}
+				<ul class="sa-list">
+					{% for proposition in propositions %}
+						<li class="sa-item">
+							<div>
+								<h2>{{ proposition.companies.fullName }}</h2>
+								<p>{{ proposition.companies.address }}</p>
+
+							</div>
+							<span class="sa-tag">Envoyée le
+								{{ proposition.sentAt|date('d/m/Y H:i') }}</span>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</section>
+	</main>
+{% endblock %}
