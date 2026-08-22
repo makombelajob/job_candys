@@ -27,4 +27,23 @@ class VisitorsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function hasReachedVisitLimit(
+        string $ip,
+        int $limit = 100
+    ): bool
+    {
+
+        $result = $this->createQueryBuilder('v')
+            ->select('v.id')
+            ->andWhere('v.ipAddress = :ip')  
+            ->andWhere('v.visitCount >= :limit')
+            ->setParameter('ip', $ip)
+            ->setParameter('limit', $limit)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result !== null;
+    }
 }

@@ -33,7 +33,7 @@ class VisitorTrackingSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => 'onRequestEvent',
+            RequestEvent::class => ['onRequestEvent', 0],
         ];
     }
 }
